@@ -3,9 +3,8 @@
 namespace App\Actions\Notifications;
 
 use Filament\Notifications\Notification;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Symfony\Component\Process\Process;
 
 class SendAppriseTestNotification
 {
@@ -19,43 +18,32 @@ class SendAppriseTestNotification
             return;
         }
 
-        $client = new Client;
-
         foreach ($webhooks as $webhook) {
-            $payload = [
-                'body' => '👋 Testing the Apprise notification channel.',
-            ];
-
-            if ($webhook['notification_type'] === 'tags' && ! empty($webhook['tags'])) {
-                $tags = is_string($webhook['tags']) ? explode(',', $webhook['tags']) : $webhook['tags'];
-                $payload['tags'] = implode(',', array_map('trim', $tags));
-            } elseif (! empty($webhook['service_url'])) {
-                $payload['urls'] = $webhook['service_url'];
-            } else {
-                Notification::make()->title('Webhook is missing either tags or service URL!')->warning()->send();
+            if (empty($webhook['service_url'])) {
+                Notification::make()->title('There is no Service URL set!')->warning()->send();
 
                 continue;
             }
 
-            try {
-                $response = $client->post(rtrim($webhook['url'], '/'), [
-                    'form_params' => $payload,
-                ]);
+            // Build the command as an array
+            $command = array_filter([
+                'apprise',
+                '-b',
+                '👋 Testing the Apprise notification channel.',
+                $webhook['service_url'],
+            ]);
 
-                if ($response->getStatusCode() === 200) {
-                    Notification::make()->title('Apprise notification sent successfully.')->success()->send();
-                } else {
-                    Notification::make()
-                        ->title('Failed to send Apprise notification.')
-                        ->warning()
-                        ->body('HTTP Status: '.$response->getStatusCode())
-                        ->send();
-                }
-            } catch (RequestException $e) {
+            // Create and run the process
+            $process = new Process($command);
+
+            try {
+                $process->mustRun();
+                Notification::make()->title('Apprise notification sent successfully.')->success()->send();
+            } catch (\Exception $e) {
                 Notification::make()
                     ->title('Failed to send Apprise notification.')
                     ->warning()
-                    ->body($e->getMessage())
+                    ->body('Error: '.$e->getMessage())
                     ->send();
             }
         }

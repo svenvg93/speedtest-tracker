@@ -115,35 +115,13 @@ class NotificationPage extends SettingsPage
 
                                                 Forms\Components\Repeater::make('apprise_webhooks')
                                                     ->label('apprise Webhooks')
-                                                    ->hint(new HtmlString('<a href="https://github.com/caronc/apprise-api" target="_blank">Apprise Documentation</a>'))
+                                                    ->hint(new HtmlString('<a href="https://github.com/caronc/apprise?tab=readme-ov-file#supported-notifications" target="_blank">Apprise Documentation</a>'))
                                                     ->schema([
-                                                        Forms\Components\TextInput::make('url')
-                                                            ->label('URL')
-                                                            ->placeholder('http://apprise:8000/notify/apprise')
-                                                            ->maxLength(2000)
-                                                            ->required()
-                                                            ->url(),
-                                                        Forms\Components\Radio::make('notification_type')
-                                                            ->label('Notification Type')
-                                                            ->options([
-                                                                'service_url' => 'Service URL',
-                                                                'tags' => 'Tags',
-                                                            ])
-                                                            ->default('service_url')
-                                                            ->reactive()
-                                                            ->required(),
                                                         Forms\Components\TextInput::make('service_url')
                                                             ->label('Service URL')
                                                             ->placeholder('discord://WebhookID/WebhookToken')
                                                             ->maxLength(200)
-                                                            ->required()
-                                                            ->visible(fn (callable $get) => $get('notification_type') === 'service_url'),
-                                                        Forms\Components\TextInput::make('tags')
-                                                            ->label('Tags')
-                                                            ->placeholder('Homelab')
-                                                            ->maxLength(200)
-                                                            ->required()
-                                                            ->visible(fn (callable $get) => $get('notification_type') === 'tags'),
+                                                            ->required(),
                                                     ])
                                                     ->columnSpanFull(),
                                                 Forms\Components\Actions::make([
