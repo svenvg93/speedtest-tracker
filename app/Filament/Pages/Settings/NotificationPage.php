@@ -22,13 +22,13 @@ class NotificationPage extends SettingsPage
 {
     protected static ?string $navigationIcon = 'heroicon-o-bell';
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'Notifications';
 
     protected static ?int $navigationSort = 3;
 
-    protected static ?string $title = 'Notifications';
+    protected static ?string $title = 'Channels';
 
-    protected static ?string $navigationLabel = 'Notifications';
+    protected static ?string $navigationLabel = 'Channels';
 
     protected static string $settings = NotificationSettings::class;
 
