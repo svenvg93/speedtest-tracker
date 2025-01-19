@@ -4,6 +4,7 @@ namespace App\Listeners\Discord;
 
 use App\Events\SpeedtestCompleted;
 use App\Helpers\Number;
+use App\Services\NotificationTemplateService;
 use App\Settings\NotificationSettings;
 use App\Settings\ThresholdSettings;
 use Illuminate\Support\Facades\Log;
@@ -61,17 +62,25 @@ class SendSpeedtestThresholdNotification
             return;
         }
 
+        // Create template service
+        $templateService = new NotificationTemplateService;
+
+        $data = [
+            'id' => $event->result->id,
+            'service' => Str::title($event->result->service->getLabel()),
+            'serverName' => $event->result->server_name,
+            'serverId' => $event->result->server_id,
+            'isp' => $event->result->isp,
+            'metrics' => $failed,
+            'speedtest_url' => $event->result->result_url,
+            'url' => url('/admin/results'),
+        ];
+
+        // Render the template
+        $content = $templateService->render('speedtest-threshold', $data);
+
         $payload = [
-            'content' => view('discord.speedtest-threshold', [
-                'id' => $event->result->id,
-                'service' => Str::title($event->result->service->getLabel()),
-                'serverName' => $event->result->server_name,
-                'serverId' => $event->result->server_id,
-                'isp' => $event->result->isp,
-                'metrics' => $failed,
-                'speedtest_url' => $event->result->result_url,
-                'url' => url('/admin/results'),
-            ])->render(),
+            'content' => $content,
         ];
 
         foreach ($notificationSettings->discord_webhooks as $url) {
