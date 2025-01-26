@@ -1,6 +1,8 @@
 <?php
 
 use App\Actions\CheckForScheduledSpeedtests;
+use App\Actions\Notifications\CheckAndSendDailyAverageNotifications;
+use App\Actions\Notifications\CheckAndSendWeeklyAverageNotifications;
 use Illuminate\Support\Facades\Schedule;
 
 /**
@@ -34,4 +36,14 @@ Schedule::daily()
 Schedule::everyMinute()
     ->group(function () {
         Schedule::call(fn () => CheckForScheduledSpeedtests::run());
+    });
+
+Schedule::daily()
+    ->group(function () {
+        Schedule::call(fn () => CheckAndSendDailyAverageNotifications::run());
+    });
+
+Schedule::weeklyOn(1, '00:00')
+    ->group(function () {
+        Schedule::call(fn () => CheckAndSendWeeklyAverageNotifications::run());
     });

@@ -44,6 +44,10 @@ class NotificationSettings extends Settings
 
     public bool $discord_on_threshold_failure;
 
+    public bool $discord_daily_average;
+
+    public bool $discord_weekly_average;
+
     public ?array $discord_webhooks;
 
     public bool $ntfy_enabled;

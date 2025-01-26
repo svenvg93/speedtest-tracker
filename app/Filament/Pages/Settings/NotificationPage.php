@@ -159,12 +159,17 @@ class NotificationPage extends SettingsPage
                                             ->schema([
                                                 Forms\Components\Fieldset::make('Triggers')
                                                     ->schema([
-                                                        Forms\Components\Toggle::make('discord_on_speedtest_run')
-                                                            ->label('Notify on every speedtest run')
-                                                            ->columnSpanFull(),
-                                                        Forms\Components\Toggle::make('discord_on_threshold_failure')
-                                                            ->label('Notify on threshold failures')
-                                                            ->columnSpanFull(),
+                                                        Forms\Components\Grid::make(2)
+                                                            ->schema([
+                                                                Forms\Components\Toggle::make('discord_on_speedtest_run')
+                                                                    ->label('Notify on every speedtest run'),
+                                                                Forms\Components\Toggle::make('discord_on_threshold_failure')
+                                                                    ->label('Notify on threshold failures'),
+                                                                Forms\Components\Toggle::make('discord_daily_average')
+                                                                    ->label('Notify for Daily Average'),
+                                                                Forms\Components\Toggle::make('discord_weekly_average')
+                                                                    ->label('Notify for Weekly Average'),
+                                                            ]),
                                                     ]),
                                                 Forms\Components\Repeater::make('discord_webhooks')
                                                     ->label('Webhooks')
