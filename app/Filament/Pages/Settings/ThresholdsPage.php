@@ -85,7 +85,7 @@ class ThresholdsPage extends SettingsPage
                                                         Forms\Components\TextInput::make('consecutive_breach_threshold')
                                                             ->label('Consecutive Breachs')
                                                             ->hint('Count')
-                                                            ->helperText('Set to zero to disable this metric.')
+                                                            ->helperText('Consecutive breaches needed for notification. Set to zero to disable this.')
                                                             ->default(0)
                                                             ->minValue(0)
                                                             ->numeric()
