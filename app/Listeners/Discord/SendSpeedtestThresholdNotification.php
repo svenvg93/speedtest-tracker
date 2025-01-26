@@ -4,6 +4,7 @@ namespace App\Listeners\Discord;
 
 use App\Events\SpeedtestCompleted;
 use App\Helpers\Number;
+use App\Models\Result;
 use App\Settings\NotificationSettings;
 use App\Settings\ThresholdSettings;
 use Illuminate\Support\Facades\Log;
@@ -28,7 +29,7 @@ class SendSpeedtestThresholdNotification
         }
 
         if (! count($notificationSettings->discord_webhooks)) {
-            Log::warning('Discord urls not found, check Discord notification channel settings.');
+            Log::warning('Discord URLs not found, check Discord notification channel settings.');
 
             return;
         }
@@ -36,6 +37,13 @@ class SendSpeedtestThresholdNotification
         $thresholdSettings = new ThresholdSettings;
 
         if (! $thresholdSettings->absolute_enabled) {
+            return;
+        }
+
+        // Check consecutive breach threshold
+        if (! $this->hasConsecutiveFailures($thresholdSettings->consecutive_breach_threshold)) {
+            Log::info('Not enough consecutive failures to trigger a notification.');
+
             return;
         }
 
@@ -81,6 +89,24 @@ class SendSpeedtestThresholdNotification
                 ->doNotSign()
                 ->dispatch();
         }
+    }
+
+    /**
+     * Check if there are enough consecutive failures.
+     */
+    private function hasConsecutiveFailures(int $threshold): bool
+    {
+        if ($threshold <= 0) {
+            return true; // No threshold check needed
+        }
+
+        $recentResults = Result::orderBy('created_at', 'desc')
+            ->limit($threshold)
+            ->get();
+
+        $unhealthyResults = $recentResults->filter(fn ($result) => $result->healthy === false);
+
+        return $unhealthyResults->count() >= $threshold;
     }
 
     /**

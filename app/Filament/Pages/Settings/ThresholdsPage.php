@@ -82,6 +82,14 @@ class ThresholdsPage extends SettingsPage
                                                             ->minValue(0)
                                                             ->numeric()
                                                             ->required(),
+                                                        Forms\Components\TextInput::make('consecutive_breach_threshold')
+                                                            ->label('Consecutive Breachs')
+                                                            ->hint('Count')
+                                                            ->helperText('Set to zero to disable this metric.')
+                                                            ->default(0)
+                                                            ->minValue(0)
+                                                            ->numeric()
+                                                            ->required(),
                                                     ])
                                                     ->columns([
                                                         'default' => 1,

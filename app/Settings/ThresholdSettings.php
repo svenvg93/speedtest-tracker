@@ -14,6 +14,8 @@ class ThresholdSettings extends Settings
 
     public ?float $absolute_ping;
 
+    public ?float $consecutive_breach_threshold;
+
     public static function group(): string
     {
         return 'threshold';
