@@ -42,6 +42,8 @@ class NotificationSettings extends Settings
 
     public bool $discord_on_speedtest_run;
 
+    public bool $discord_on_speedtest_failure;
+
     public bool $discord_on_threshold_failure;
 
     public ?array $discord_webhooks;

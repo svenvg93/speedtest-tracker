@@ -162,6 +162,9 @@ class NotificationPage extends SettingsPage
                                                         Forms\Components\Toggle::make('discord_on_speedtest_run')
                                                             ->label('Notify on every speedtest run')
                                                             ->columnSpanFull(),
+                                                        Forms\Components\Toggle::make('discord_on_speedtest_failure')
+                                                            ->label('Notify on every failed speedtest')
+                                                            ->columnSpanFull(),
                                                         Forms\Components\Toggle::make('discord_on_threshold_failure')
                                                             ->label('Notify on threshold failures')
                                                             ->columnSpanFull(),
