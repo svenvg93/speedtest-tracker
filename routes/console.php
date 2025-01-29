@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\CheckForScheduledSpeedtests;
+use App\Actions\RunSpeedtestListAction;
 use Illuminate\Support\Facades\Schedule;
 
 /**
@@ -34,4 +35,9 @@ Schedule::daily()
 Schedule::everyMinute()
     ->group(function () {
         Schedule::call(fn () => CheckForScheduledSpeedtests::run());
+    });
+
+Schedule::daily()
+    ->group(function () {
+        Schedule::call(fn () => (new RunSpeedtestListAction)->execute());
     });
