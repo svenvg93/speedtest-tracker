@@ -4,9 +4,9 @@ use Carbon\Carbon;
 
 return [
 
-    'build_date' => Carbon::parse('2025-02-03'),
+    'build_date' => Carbon::parse('2025-03-18'),
 
-    'build_version' => 'v1.2.2',
+    'build_version' => 'v1.3.0',
 
     /**
      * General settings.
@@ -16,15 +16,6 @@ return [
     'prune_results_older_than' => (int) env('PRUNE_RESULTS_OLDER_THAN', 0),
 
     'public_dashboard' => env('PUBLIC_DASHBOARD', false),
-
-    /**
-     * Polling settings.
-     */
-    'dashboard_polling' => env('DASHBOARD_POLLING', '60s'),
-
-    'notification_polling' => env('NOTIFICATION_POLLING', '60s'),
-
-    'results_polling' => env('RESULTS_POLLING', null),
 
     /**
      * Speedtest settings.
