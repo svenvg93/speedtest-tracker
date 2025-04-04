@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Actions\GetExternalIpAddress;
+use App\Actions\CheckInternetConnection;
 use App\Enums\ResultStatus;
 use App\Events\SpeedtestChecking;
 use App\Events\SpeedtestFailed;
@@ -10,6 +10,7 @@ use App\Models\Result;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Middleware\SkipIfBatchCancelled;
 
 class CheckForInternetConnectionJob implements ShouldQueue
 {
@@ -23,21 +24,27 @@ class CheckForInternetConnectionJob implements ShouldQueue
     ) {}
 
     /**
+     * Get the middleware the job should pass through.
+     */
+    public function middleware(): array
+    {
+        return [
+            new SkipIfBatchCancelled,
+        ];
+    }
+
+    /**
      * Execute the job.
      */
     public function handle(): void
     {
-        if ($this->batch()->cancelled()) {
-            return;
-        }
-
         $this->result->update([
             'status' => ResultStatus::Checking,
         ]);
 
         SpeedtestChecking::dispatch($this->result);
 
-        if (GetExternalIpAddress::run() !== false) {
+        if (CheckInternetConnection::run() !== false) {
             return;
         }
 

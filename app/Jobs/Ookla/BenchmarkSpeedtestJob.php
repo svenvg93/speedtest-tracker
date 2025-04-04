@@ -3,13 +3,16 @@
 namespace App\Jobs\Ookla;
 
 use App\Enums\ResultStatus;
+use App\Events\SpeedtestBenchmarkFailed;
 use App\Events\SpeedtestBenchmarking;
+use App\Events\SpeedtestBenchmarkPassed;
 use App\Helpers\Benchmark;
 use App\Models\Result;
 use App\Settings\ThresholdSettings;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Middleware\SkipIfBatchCancelled;
 use Illuminate\Support\Arr;
 
 class BenchmarkSpeedtestJob implements ShouldQueue
@@ -26,13 +29,23 @@ class BenchmarkSpeedtestJob implements ShouldQueue
     ) {}
 
     /**
+     * Get the middleware the job should pass through.
+     */
+    public function middleware(): array
+    {
+        return [
+            new SkipIfBatchCancelled,
+        ];
+    }
+
+    /**
      * Execute the job.
      */
     public function handle(): void
     {
         $settings = app(ThresholdSettings::class);
 
-        if ($this->batch()->cancelled() || $settings->absolute_enabled == false) {
+        if ($settings->absolute_enabled == false) {
             return;
         }
 
@@ -55,6 +68,10 @@ class BenchmarkSpeedtestJob implements ShouldQueue
             'benchmarks' => $benchmarks,
             'healthy' => $this->healthy,
         ]);
+
+        $this->healthy
+            ? SpeedtestBenchmarkPassed::dispatch($this->result)
+            : SpeedtestBenchmarkFailed::dispatch($this->result);
     }
 
     private function benchmark(Result $result, ThresholdSettings $settings): array
