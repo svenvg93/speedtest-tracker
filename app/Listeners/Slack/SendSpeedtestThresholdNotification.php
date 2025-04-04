@@ -39,6 +39,13 @@ class SendSpeedtestThresholdNotification
             return;
         }
 
+        // Check consecutive breach threshold
+        if (! $this->hasConsecutiveFailures($thresholdSettings->consecutive_breach_threshold)) {
+            Log::info('Not enough consecutive failures to trigger a notification.');
+
+            return;
+        }
+
         $failed = [];
 
         if ($thresholdSettings->absolute_download > 0) {
@@ -81,6 +88,24 @@ class SendSpeedtestThresholdNotification
                 ->doNotSign()
                 ->dispatch();
         }
+    }
+
+    /**
+     * Check if there are enough consecutive failures.
+     */
+    private function hasConsecutiveFailures(int $threshold): bool
+    {
+        if ($threshold <= 0) {
+            return true; // No threshold check needed
+        }
+
+        $recentResults = Result::orderBy('created_at', 'desc')
+            ->limit($threshold)
+            ->get();
+
+        $unhealthyResults = $recentResults->filter(fn ($result) => $result->healthy === false);
+
+        return $unhealthyResults->count() >= $threshold;
     }
 
     /**
