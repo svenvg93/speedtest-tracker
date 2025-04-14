@@ -14,7 +14,7 @@ class RecentDownloadUploadChartWidget extends ChartWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?string $heading = 'Download / Upload (Mbps)';
+    protected static ?string $heading = 'Download / Upload';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -93,6 +93,10 @@ class RecentDownloadUploadChartWidget extends ChartWidget
             'scales' => [
                 'y' => [
                     'beginAtZero' => config('app.chart_begin_at_zero'),
+                    'title' => [
+                        'display' => true,
+                        'text' => 'Mbps',
+                    ],
                     'grace' => 2,
                 ],
             ],

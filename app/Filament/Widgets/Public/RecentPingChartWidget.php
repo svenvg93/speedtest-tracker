@@ -1,23 +1,16 @@
 <?php
 
-namespace App\Filament\Widgets;
+namespace App\Filament\Widgets\Public;
 
 use App\Enums\ResultStatus;
+use App\Helpers\Average;
 use App\Models\Result;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
-class RecentLatencyChartWidget extends ChartWidget
+class RecentPingChartWidget extends ChartWidget
 {
-    use InteractsWithPageFilters;
-
-    protected static ?string $heading = 'Download / Upload Latency';
-
-    public function getDescription(): string
-    {
-        return 'Average Latency under load';
-    }
+    protected static ?string $heading = 'Ping / Jitter';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -25,21 +18,29 @@ class RecentLatencyChartWidget extends ChartWidget
 
     protected static ?string $pollingInterval = '60s';
 
+    public ?string $filter = 'week';
+
+    protected function getFilters(): ?array
+    {
+        return [
+            '24h' => 'Last 24h',
+            'week' => 'Last week',
+            'month' => 'Last month',
+        ];
+    }
+
     protected function getData(): array
     {
-        // Ensure that startDate and endDate are treated as Carbon instances
-        $startDate = $this->filters['startDate'] ?? now()->subWeek();
-        $endDate = $this->filters['endDate'] ?? now();
-
-        // Convert dates to the correct timezone without resetting the time
-        $startDate = Carbon::parse($startDate)->timezone(config('app.timezone'));
-        $endDate = Carbon::parse($endDate)->timezone(config('app.timezone'));
-
         $results = Result::query()
-            ->select(['id', 'data', 'created_at'])
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->when($this->filters['server'] ?? null, function ($query, $serverName) {
-                $query->where('data->server->name', $serverName);
+            ->select(['id', 'data', 'ping', 'created_at'])
+            ->when($this->filter == '24h', function ($query) {
+                $query->where('created_at', '>=', now()->subDay());
+            })
+            ->when($this->filter == 'week', function ($query) {
+                $query->where('created_at', '>=', now()->subWeek());
+            })
+            ->when($this->filter == 'month', function ($query) {
+                $query->where('created_at', '>=', now()->subMonth());
             })
             ->orderBy('created_at')
             ->get();
@@ -47,25 +48,26 @@ class RecentLatencyChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Download',
-                    'data' => $results->map(fn ($item) => $item->download_latency_iqm),
-                    'borderColor' => 'rgba(14, 165, 233)',
-                    'backgroundColor' => 'rgba(14, 165, 233, 0.1)',
-                    'pointBackgroundColor' => 'rgba(14, 165, 233)',
+                    'label' => 'Ping',
+                    'data' => $results->map(fn ($item) => $item->ping),
+                    'borderColor' => 'rgba(16, 185, 129)',
+                    'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
+                    'pointBackgroundColor' => 'rgba(16, 185, 129)',
                     'fill' => true,
                     'cubicInterpolationMode' => 'monotone',
                     'tension' => 0.4,
                     'pointRadius' => count($results) <= 24 ? 3 : 0,
                 ],
                 [
-                    'label' => 'Upload',
-                    'data' => $results->map(fn ($item) => $item->upload_latency_iqm),
-                    'borderColor' => 'rgba(139, 92, 246)',
+                    'label' => 'Jitter',
+                    'data' => $results->map(fn ($item) => $item->ping_jitter),
+                    'borderColor' => 'rgb(139, 92, 246)',
                     'backgroundColor' => 'rgba(139, 92, 246, 0.1)',
-                    'pointBackgroundColor' => 'rgba(139, 92, 246)',
+                    'pointBackgroundColor' => 'rgb(139, 92, 246)',
                     'fill' => true,
                     'cubicInterpolationMode' => 'monotone',
                     'tension' => 0.4,
+                    'pointRadius' => 0,
                     'pointRadius' => count($results) <= 24 ? 3 : 0,
                 ],
             ],

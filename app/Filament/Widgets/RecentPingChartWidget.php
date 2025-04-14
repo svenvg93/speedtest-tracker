@@ -13,7 +13,7 @@ class RecentPingChartWidget extends ChartWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?string $heading = 'Ping / Jitter (ms)';
+    protected static ?string $heading = 'Ping / Jitter';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -87,6 +87,10 @@ class RecentPingChartWidget extends ChartWidget
             'scales' => [
                 'y' => [
                     'beginAtZero' => config('app.chart_begin_at_zero'),
+                    'title' => [
+                        'display' => true,
+                        'text' => 'ms',
+                    ],
                     'grace' => 2,
                 ],
             ],

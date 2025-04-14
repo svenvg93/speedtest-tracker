@@ -1,17 +1,14 @@
 <?php
 
-namespace App\Filament\Widgets;
+namespace App\Filament\Widgets\Public;
 
 use App\Enums\ResultStatus;
 use App\Models\Result;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
-use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class RecentLatencyChartWidget extends ChartWidget
 {
-    use InteractsWithPageFilters;
-
     protected static ?string $heading = 'Download / Upload Latency';
 
     public function getDescription(): string
@@ -25,21 +22,29 @@ class RecentLatencyChartWidget extends ChartWidget
 
     protected static ?string $pollingInterval = '60s';
 
+    public ?string $filter = 'week';
+
+    protected function getFilters(): ?array
+    {
+        return [
+            '24h' => 'Last 24h',
+            'week' => 'Last week',
+            'month' => 'Last month',
+        ];
+    }
+
     protected function getData(): array
     {
-        // Ensure that startDate and endDate are treated as Carbon instances
-        $startDate = $this->filters['startDate'] ?? now()->subWeek();
-        $endDate = $this->filters['endDate'] ?? now();
-
-        // Convert dates to the correct timezone without resetting the time
-        $startDate = Carbon::parse($startDate)->timezone(config('app.timezone'));
-        $endDate = Carbon::parse($endDate)->timezone(config('app.timezone'));
-
         $results = Result::query()
             ->select(['id', 'data', 'created_at'])
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->when($this->filters['server'] ?? null, function ($query, $serverName) {
-                $query->where('data->server->name', $serverName);
+            ->when($this->filter == '24h', function ($query) {
+                $query->where('created_at', '>=', now()->subDay());
+            })
+            ->when($this->filter == 'week', function ($query) {
+                $query->where('created_at', '>=', now()->subWeek());
+            })
+            ->when($this->filter == 'month', function ($query) {
+                $query->where('created_at', '>=', now()->subMonth());
             })
             ->orderBy('created_at')
             ->get();
