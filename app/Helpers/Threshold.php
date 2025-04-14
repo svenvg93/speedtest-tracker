@@ -2,6 +2,9 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Collection;
+use App\Settings\ThresholdSettings;
+
 class Threshold
 {
     /**
@@ -26,4 +29,23 @@ class Threshold
         // For download/upload, higher is better.
         return (($value - $threshold) / $threshold) * 100;
     }
+
+    public static function getBreachedTestPercentage(Collection $results): ?float
+    {
+        // Get the threshold settings
+        $thresholds = app(ThresholdSettings::class);
+    
+        if (!$thresholds->absolute_enabled) {
+            return null;
+        }
+    
+        $thresholdResults = $results->filter(fn ($result) => !is_null($result->healthy));
+    
+        $totalTests = $thresholdResults->count();
+        $thresholdBreachedTests = $thresholdResults->where('healthy', false)->count();
+    
+        return $totalTests > 0 ? ($thresholdBreachedTests / $totalTests) * 100 : 0;
+    }
+
 }
+
