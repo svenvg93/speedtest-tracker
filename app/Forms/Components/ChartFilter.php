@@ -5,7 +5,7 @@ namespace App\Forms\Components;
 use App\Models\Result;
 use App\Enums\ResultStatus;
 use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 
@@ -23,13 +23,13 @@ class ChartFilter
             ->schema([
                 Forms\Components\Section::make()
                     ->schema([
-                        DatePicker::make('startDate')
+                        DateTimePicker::make('startDate')
                             ->label('Start Date')
                             ->default($defaultStartDate->startOfDay())
                             ->reactive()
                             ->seconds(false)
                             ->native(false),
-                        DatePicker::make('endDate')
+                        DateTimePicker::make('endDate')
                             ->label('End Date')
                             ->default($defaultEndDate->endOfDay())
                             ->reactive()
