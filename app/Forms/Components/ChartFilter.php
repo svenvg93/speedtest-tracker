@@ -47,7 +47,7 @@ class ChartFilter
                                     ->mapWithKeys(fn ($name) => [$name => $name])
                                     ->toArray();
                         
-                                return ['' => 'All Servers'] + $serverOptions;
+                                return $serverOptions;
                             })
                             ->searchable()
                             ->placeholder('All Servers')
