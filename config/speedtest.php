@@ -4,9 +4,9 @@ use Carbon\Carbon;
 
 return [
 
-    'build_date' => Carbon::parse('2025-03-18'),
+    'build_date' => Carbon::parse('2025-04-15'),
 
-    'build_version' => 'v1.3.0',
+    'build_version' => 'v1.4.1',
 
     /**
      * General settings.
@@ -27,6 +27,8 @@ return [
     'blocked_servers' => env('SPEEDTEST_BLOCKED_SERVERS'),
 
     'interface' => env('SPEEDTEST_INTERFACE'),
+
+    'checkinternet_url' => env('SPEEDTEST_CHECKINTERNET_URL', 'https://icanhazip.com'),
 
     /**
      * IP filtering settings.
