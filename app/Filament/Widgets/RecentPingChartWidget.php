@@ -2,8 +2,6 @@
 
 namespace App\Filament\Widgets;
 
-use App\Enums\ResultStatus;
-use App\Helpers\Average;
 use App\Models\Result;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;

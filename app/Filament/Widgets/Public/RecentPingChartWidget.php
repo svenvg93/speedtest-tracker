@@ -2,10 +2,7 @@
 
 namespace App\Filament\Widgets\Public;
 
-use App\Enums\ResultStatus;
-use App\Helpers\Average;
 use App\Models\Result;
-use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 
 class RecentPingChartWidget extends ChartWidget

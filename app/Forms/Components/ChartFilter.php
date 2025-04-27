@@ -3,7 +3,6 @@
 namespace App\Forms\Components;
 
 use App\Models\Result;
-use App\Enums\ResultStatus;
 use Filament\Forms;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -46,7 +45,7 @@ class ChartFilter
                                     ->sort()
                                     ->mapWithKeys(fn ($name) => [$name => $name])
                                     ->toArray();
-                        
+
                                 return $serverOptions;
                             })
                             ->searchable()

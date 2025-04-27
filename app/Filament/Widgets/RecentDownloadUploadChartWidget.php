@@ -2,8 +2,6 @@
 
 namespace App\Filament\Widgets;
 
-use App\Enums\ResultStatus;
-use App\Helpers\Average;
 use App\Helpers\Number;
 use App\Models\Result;
 use Carbon\Carbon;
@@ -26,10 +24,10 @@ class RecentDownloadUploadChartWidget extends ChartWidget
     {
         $startDate = $this->filters['startDate'] ?? now()->subWeek();
         $endDate = $this->filters['endDate'] ?? now();
-    
+
         $startDate = Carbon::parse($startDate)->timezone(config('app.timezone'));
         $endDate = Carbon::parse($endDate)->timezone(config('app.timezone'));
-    
+
         $results = Result::query()
             ->select(['id', 'download', 'upload', 'data', 'created_at'])
             ->whereBetween('created_at', [$startDate, $endDate])
@@ -38,14 +36,12 @@ class RecentDownloadUploadChartWidget extends ChartWidget
             })
             ->orderBy('created_at')
             ->get();
-    
+
         return [
             'datasets' => [
                 [
                     'label' => 'Download',
-                    'data' => $results->map(fn ($item) =>
-                        !blank($item->download) ? Number::bitsToMagnitude(bits: $item->download_bits, precision: 2, magnitude: 'mbit') : null
-                    ),
+                    'data' => $results->map(fn ($item) => ! blank($item->download) ? Number::bitsToMagnitude(bits: $item->download_bits, precision: 2, magnitude: 'mbit') : null),
                     'borderColor' => 'rgba(14, 165, 233)',
                     'backgroundColor' => 'rgba(14, 165, 233, 0.1)',
                     'pointBackgroundColor' => 'rgba(14, 165, 233)',
@@ -56,8 +52,7 @@ class RecentDownloadUploadChartWidget extends ChartWidget
                 ],
                 [
                     'label' => 'Upload',
-                    'data' => $results->map(fn ($item) =>
-                        !blank($item->upload) ? Number::bitsToMagnitude(bits: $item->upload_bits, precision: 2, magnitude: 'mbit') : null
+                    'data' => $results->map(fn ($item) => ! blank($item->upload) ? Number::bitsToMagnitude(bits: $item->upload_bits, precision: 2, magnitude: 'mbit') : null
                     ),
                     'borderColor' => 'rgba(139, 92, 246)',
                     'backgroundColor' => 'rgba(139, 92, 246, 0.1)',
@@ -68,12 +63,9 @@ class RecentDownloadUploadChartWidget extends ChartWidget
                     'pointRadius' => count($results) <= 24 ? 3 : 0,
                 ],
             ],
-            'labels' => $results->map(fn ($item) =>
-                $item->created_at->timezone(config('app.display_timezone'))->format(config('app.chart_datetime_format'))
-            ),
+            'labels' => $results->map(fn ($item) => $item->created_at->timezone(config('app.display_timezone'))->format(config('app.chart_datetime_format'))),
         ];
     }
-    
 
     protected function getOptions(): array
     {

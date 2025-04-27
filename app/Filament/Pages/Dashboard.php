@@ -2,25 +2,17 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Widgets\RecentDownloadChartWidget;
-use App\Filament\Widgets\RecentDownloadLatencyChartWidget;
-use App\Filament\Widgets\RecentJitterChartWidget;
-use App\Filament\Widgets\RecentPingChartWidget;
-use App\Filament\Widgets\RecentUploadChartWidget;
-use App\Filament\Widgets\RecentUploadLatencyChartWidget;
-use App\Filament\Widgets\StatsOverviewWidget;
+use App\Filament\Widgets\AverageStatsWidget;
 use App\Filament\Widgets\RecentDownloadUploadChartWidget;
 use App\Filament\Widgets\RecentLatencyChartWidget;
-use App\Filament\Widgets\AverageStatsWidget;
+use App\Filament\Widgets\RecentPingChartWidget;
+use App\Filament\Widgets\StatsOverviewWidget;
 use App\Forms\Components\ChartFilter;
 use Carbon\Carbon;
-use Filament\Forms;
-use Filament\Forms\Form;
 use Cron\CronExpression;
+use Filament\Forms\Form;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
-use Filament\Support\Enums\IconPosition;
-
 
 class Dashboard extends BaseDashboard
 {
