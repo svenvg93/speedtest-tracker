@@ -13,7 +13,7 @@ return new class extends Migration
             'description' => 'Default template for threshold breached Apprise notifications',
             'title' => 'Speedtest Breached - #{{ $id }}',
             'content' => <<<'TEMPLATE'
-            A new speedtest on **{{ config('app.name') }}** was completed using **{{ $service }}** on **{{ $isp }}** but a threshold was breached.
+            A new speedtest on **{{ $app_name }}** was completed using **{{ $service }}** on **{{ $isp }}** but a threshold was breached.
 
             @foreach ($metrics as $item)
             - **{{ $item['name'] }}** {{ $item['threshold'] }}: {{ $item['value'] }}

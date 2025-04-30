@@ -13,7 +13,7 @@ return new class extends Migration
             'description' => 'Default template for completed speedtest Apprise notifications',
             'title' => 'Speedtest Completed - #{{ $id }}',
             'content' => <<<'TEMPLATE'
-            A new speedtest on **{{ config('app.name') }}** was completed using **{{ $service }}**.
+            A new speedtest on **{{ $app_name }}** was completed using **{{ $service }}**.
 
             - **Server name:** {{ $serverName }}
             - **Server ID:** {{ $serverId }}

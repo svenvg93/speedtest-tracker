@@ -33,7 +33,7 @@ class SpeedtestNotificationData
             'uploadLatencyLow' => $result->upload_latency_low.' ms',
             'uploadLatencyHigh' => $result->upload_latency_high.' ms',
             'uploadLatencyJitter' => $result->upload_latency_jitter.' ms',
-            'ExternalIp' => $result->external_ip,
+            'externalIp' => $result->ip_address,
             'serverHost' => $result->server_host,
             'serverPort' => $result->server_port,
             'serverLocation' => $result->server_location,
@@ -42,6 +42,7 @@ class SpeedtestNotificationData
             'speedtest_url' => $result->result_url,
             'url' => url('/admin/results'),
             'metrics' => $failed,
+            'app_name' => config('app.name'),
         ];
     }
 }
