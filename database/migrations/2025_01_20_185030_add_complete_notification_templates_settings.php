@@ -11,9 +11,8 @@ return new class extends Migration
         DB::table('notification_templates')->insert([
             'name' => 'speedtest-completed',
             'description' => 'Template for completed speedtest notifications',
+            'title' => 'Speedtest Completed - #{{ $id }}',
             'content' => <<<'TEMPLATE'
-            **Speedtest Completed - #{{ $id }}**
-
             A new speedtest on **{{ config('app.name') }}** was completed using **{{ $service }}**.
 
             - **Server name:** {{ $serverName }}

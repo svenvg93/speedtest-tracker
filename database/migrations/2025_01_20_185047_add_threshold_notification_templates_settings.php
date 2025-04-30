@@ -11,9 +11,8 @@ return new class extends Migration
         DB::table('notification_templates')->insert([
             'name' => 'speedtest-threshold',
             'description' => 'Template for threshold breached notifications',
+            'title' => 'Speedtest Breached - #{{ $id }}',
             'content' => <<<'TEMPLATE'
-            **Speedtest Threshold Breached - #{{ $id }}**
-
             A new speedtest on **{{ config('app.name') }}** was completed using **{{ $service }}** on **{{ $isp }}** but a threshold was breached.
 
             @foreach ($metrics as $item)
