@@ -95,7 +95,6 @@ class NotificationTemplateResource extends Resource
     {
         return [
             'index' => Pages\ListNotificationTemplates::route('/'),
-            'edit' => Pages\EditNotificationTemplate::route('/{record}/edit'),
         ];
     }
 }

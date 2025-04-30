@@ -10,7 +10,7 @@ return new class extends Migration
         // Inserting the "threshold" notification template
         DB::table('notification_templates')->insert([
             'name' => 'speedtest-threshold',
-            'description' => 'Template for threshold breached notifications',
+            'description' => 'Default template for threshold breached Apprise notifications',
             'title' => 'Speedtest Breached - #{{ $id }}',
             'content' => <<<'TEMPLATE'
             A new speedtest on **{{ config('app.name') }}** was completed using **{{ $service }}** on **{{ $isp }}** but a threshold was breached.

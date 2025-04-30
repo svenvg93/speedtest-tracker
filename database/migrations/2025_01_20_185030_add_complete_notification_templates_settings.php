@@ -10,7 +10,7 @@ return new class extends Migration
         // Inserting the "complete" notification template
         DB::table('notification_templates')->insert([
             'name' => 'speedtest-completed',
-            'description' => 'Template for completed speedtest notifications',
+            'description' => 'Default template for completed speedtest Apprise notifications',
             'title' => 'Speedtest Completed - #{{ $id }}',
             'content' => <<<'TEMPLATE'
             A new speedtest on **{{ config('app.name') }}** was completed using **{{ $service }}**.
@@ -21,7 +21,7 @@ return new class extends Migration
             - **Ping:** {{ $ping }}
             - **Download:** {{ $download }}
             - **Upload:** {{ $upload }}
-            - **Packet Loss:** {{ $packetLoss }} **%**
+            - **Packet Loss:** {{ $packetLoss }}
             - **Ookla Speedtest:** {{ $speedtest_url }}
             - **URL:** {{ $url }}
             TEMPLATE,
