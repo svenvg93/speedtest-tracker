@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Enums\ResultStatus;
 use App\Helpers\Average;
+use App\Helpers\Threshold;
 use App\Models\Result;
 use Carbon\Carbon;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
@@ -38,34 +39,60 @@ class AverageStatsWidget extends BaseWidget
         $averageUpload = Average::averageUpload($results);
         $averagePing = Average::averagePing($results);
 
+        $downloadEval = Threshold::evaluateMetric($averageDownload, 'download');
+        $uploadEval = Threshold::evaluateMetric($averageUpload, 'upload');
+        $pingEval = Threshold::evaluateMetric($averagePing, 'ping');
+
         $cards = [
-            Stat::make('Download Speed (Average)', $averageDownload !== null
-                ? number_format($averageDownload, 2).' Mbps'
-                : 'n/a'
-            ),
-            Stat::make('Upload Speed (Average)', $averageUpload !== null
-                ? number_format($averageUpload, 2).' Mbps'
-                : 'n/a'
-            ),
-            Stat::make('Ping Time (Average)', $averagePing !== null
-                ? number_format($averagePing, 2).' ms'
-                : 'n/a'
-            ),
+            Stat::make('Average Download', $averageDownload !== null
+                    ? number_format($averageDownload, 2).' Mbps'
+                    : 'n/a'
+            )
+                ->description($downloadEval['description'])
+                ->descriptionIcon(
+                    $downloadEval['isPositive']
+                        ? 'heroicon-m-arrow-trending-up'
+                        : 'heroicon-m-arrow-trending-down'
+                )
+                ->color($downloadEval['isPositive'] ? 'success' : 'danger')
+                ->icon('heroicon-o-arrow-down-tray'),
+
+            Stat::make('Average Upload', $averageUpload !== null
+                    ? number_format($averageUpload, 2).' Mbps'
+                    : 'n/a'
+            )
+                ->description($uploadEval['description'])
+                ->descriptionIcon(
+                    $uploadEval['isPositive']
+                        ? 'heroicon-m-arrow-trending-up'
+                        : 'heroicon-m-arrow-trending-down'
+                )
+                ->color($uploadEval['isPositive'] ? 'success' : 'danger')
+                ->icon('heroicon-o-arrow-up-tray'),
+
+            Stat::make('Average Ping', $averagePing !== null
+                    ? number_format($averagePing, 2).' ms'
+                    : 'n/a'
+            )
+                ->description($pingEval['description'])
+                ->descriptionIcon(
+                    $pingEval['isPositive']
+                        ? 'heroicon-m-arrow-trending-up'
+                        : 'heroicon-m-arrow-trending-down'
+                )
+                ->color($pingEval['isPositive'] ? 'success' : 'danger')
+                ->icon('heroicon-o-clock'),
         ];
 
         // Add Threshold Breached Card based on 'healthy' status
-        $validResults = $results->whereNotNull('healthy');
+        $breachPercentage = Threshold::getBreachedTestPercentage($results);
 
-        $totalResults = $validResults->count();
-        $failedResults = $validResults->where('healthy', false)->count();
+        if (! is_null($breachPercentage)) {
+            $formatted = number_format($breachPercentage, 1);
 
-        if ($totalResults > 0) {
-            $percentageBreached = ($failedResults / $totalResults) * 100;
-            $formattedPercentage = number_format($percentageBreached, 1);
-
-            $cards[] = Stat::make('Threshold Breached Tests', $formattedPercentage.'%')
-                ->description($formattedPercentage.'% of tests breached')
-                ->color($percentageBreached > 0 ? 'danger' : 'success')
+            $cards[] = Stat::make('Failed Benchmarks %', "{$formatted}%")
+                ->description('of benchmarked tests failed')
+                ->color($breachPercentage > 0 ? 'danger' : 'success')
                 ->icon('heroicon-o-exclamation-circle');
         }
 
