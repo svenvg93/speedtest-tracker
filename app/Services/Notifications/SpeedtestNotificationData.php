@@ -33,7 +33,7 @@ class SpeedtestNotificationData
             'uploadLatencyLow' => $result->upload_latency_low.' ms',
             'uploadLatencyHigh' => $result->upload_latency_high.' ms',
             'uploadLatencyJitter' => $result->upload_latency_jitter.' ms',
-            'interfaceExternalIp' => $result->interface_external_ip,
+            'ExternalIp' => $result->external_ip,
             'serverHost' => $result->server_host,
             'serverPort' => $result->server_port,
             'serverLocation' => $result->server_location,
