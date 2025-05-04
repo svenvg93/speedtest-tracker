@@ -3,8 +3,8 @@
 namespace App\Jobs\Notifications\Apprise;
 
 use App\Helpers\Number;
+use App\Models\NotificationChannel;
 use App\Models\Result;
-use App\Settings\NotificationSettings;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,23 +19,21 @@ class SendSpeedtestCompletedNotification implements ShouldQueue
 
     public Result $result;
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct(Result $result)
     {
         $this->result = $result;
     }
 
-    /**
-     * Handle the event.
-     */
     public function handle(): void
     {
-        $notificationSettings = app(NotificationSettings::class);
+        $channels = NotificationChannel::query()
+            ->where('type', 'Apprise')
+            ->where('enabled', true)
+            ->where('on_speedtest_run', true)
+            ->get();
 
-        if (! count($notificationSettings->apprise_webhooks)) {
-            Log::warning('Apprise URLs not found, check Apprise notification channel settings.');
+        if ($channels->isEmpty()) {
+            Log::info('No enabled Apprise channels for speedtest run.');
 
             return;
         }
@@ -54,32 +52,35 @@ class SendSpeedtestCompletedNotification implements ShouldQueue
             'url' => url('/admin/results'),
         ])->render();
 
-        foreach ($notificationSettings->apprise_webhooks as $webhook) {
-            if (empty($webhook['service_url']) || empty($webhook['url'])) {
-                Log::warning('Webhook is missing service URL or URL, skipping.');
+        $client = new Client;
 
-                continue;
-            }
+        foreach ($channels as $channel) {
+            $webhooks = $channel->config['apprise_webhooks'] ?? [];
 
-            $webhookPayload = [
-                'body' => $payload,
-                'title' => 'Speedtest Completed - #{$this->result->id}',
-                'type' => 'info',
-                'urls' => $webhook['service_url'],
-            ];
+            foreach ($webhooks as $webhook) {
+                if (empty($webhook['service_url']) || empty($webhook['url'])) {
+                    Log::warning('Apprise webhook missing service URL or base URL, skipping.');
 
-            try {
-                $client = new Client;
-                $response = $client->post($webhook['url'], [
-                    'json' => $webhookPayload,
-                    'headers' => [
-                        'Content-Type' => 'application/json',
-                    ],
-                ]);
+                    continue;
+                }
 
-                Log::info('Apprise notification sent successfully to '.$webhook['url']);
-            } catch (RequestException $e) {
-                Log::error('Apprise notification failed: '.$e->getMessage());
+                $webhookPayload = [
+                    'body' => $payload,
+                    'title' => "Speedtest Completed - #{$this->result->id}",
+                    'type' => 'info',
+                    'urls' => $webhook['service_url'],
+                ];
+
+                try {
+                    $response = $client->post($webhook['url'], [
+                        'json' => $webhookPayload,
+                        'headers' => ['Content-Type' => 'application/json'],
+                    ]);
+
+                    Log::info("Apprise notification sent to {$webhook['url']} (channel ID: {$channel->id})");
+                } catch (RequestException $e) {
+                    Log::error("Apprise notification failed for {$webhook['url']}: {$e->getMessage()}");
+                }
             }
         }
     }
