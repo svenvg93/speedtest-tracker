@@ -401,7 +401,6 @@ class ResultResource extends Resource
                         blank: fn (Builder $query) => $query,
                     ),
             ])
-            ->filtersFormColumns(2)
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Action::make('view result')
