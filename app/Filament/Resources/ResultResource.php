@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\ResultStatus;
 use App\Filament\Exports\ResultExporter;
 use App\Filament\Resources\ResultResource\Pages;
+use App\Filament\Resources\ResultResource\Widgets\ResultStatsOverview;
 use App\Helpers\Number;
 use App\Jobs\TruncateResults;
 use App\Models\Result;
@@ -16,6 +17,7 @@ use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -377,6 +379,7 @@ class ResultResource extends Resource
                     ->attribute('data->server->name'),
                 Tables\Filters\TernaryFilter::make('scheduled')
                     ->nullable()
+                    ->native(false)
                     ->trueLabel('Only scheduled speedtests')
                     ->falseLabel('Only manual speedtests')
                     ->queries(
@@ -386,9 +389,11 @@ class ResultResource extends Resource
                     ),
                 Tables\Filters\SelectFilter::make('status')
                     ->multiple()
+                    ->native(false)
                     ->options(ResultStatus::class),
                 Tables\Filters\TernaryFilter::make('healthy')
                     ->nullable()
+                    ->native(false)
                     ->trueLabel('Only healthy speedtests')
                     ->falseLabel('Only unhealthy speedtests')
                     ->queries(
@@ -396,7 +401,39 @@ class ResultResource extends Resource
                         false: fn (Builder $query) => $query->where('healthy', false),
                         blank: fn (Builder $query) => $query,
                     ),
-            ])
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')
+                            ->label('Date From')
+                            ->native(false)
+                            ->placeholder(fn (): string => now()->subYear()->format('M d, Y')),
+                        Forms\Components\DatePicker::make('created_until')
+                            ->label('Date Until')
+                            ->native(false)
+                            ->placeholder(fn (): string => now()->format('M d, Y')),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['created_from'], fn ($q, $date) => $q->where('created_at', '>=', Carbon::parse($date)->startOfDay()))
+                            ->when($data['created_until'], fn ($q, $date) => $q->where('created_at', '<=', Carbon::parse($date)->endOfDay()));
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['created_from'] ?? false) {
+                            $indicators[] = 'From '.Carbon::parse($data['created_from'])->toFormattedDateString();
+                        }
+
+                        if ($data['created_until'] ?? false) {
+                            $indicators[] = 'Until '.Carbon::parse($data['created_until'])->toFormattedDateString();
+                        }
+
+                        return $indicators;
+                    }),
+            ],
+                layout: FiltersLayout::Modal,
+            )
+            ->filtersFormColumns(2)
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Action::make('view result')
@@ -446,6 +483,13 @@ class ResultResource extends Resource
             ->defaultSort('id', 'desc')
             ->deferLoading()
             ->poll('60s');
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            ResultStatsOverview::class,
+        ];
     }
 
     public static function getPages(): array
