@@ -11,7 +11,7 @@ class RecentPingChartWidget extends ChartWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?string $heading = 'Ping / Jitter';
+    protected static ?string $heading = 'Ping / Jitter / Packet Loss';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -41,8 +41,8 @@ class RecentPingChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Ping',
-                    'data' => $results->map(fn ($item) => $item->ping),
+                    'label' => 'Ping (ms)',
+                    'data' => $results->map(fn ($item) => round($item->ping, 2)),
                     'borderColor' => 'rgba(16, 185, 129)',
                     'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
                     'pointBackgroundColor' => 'rgba(16, 185, 129)',
@@ -52,11 +52,23 @@ class RecentPingChartWidget extends ChartWidget
                     'pointRadius' => count($results) <= 24 ? 3 : 0,
                 ],
                 [
-                    'label' => 'Jitter',
-                    'data' => $results->map(fn ($item) => $item->ping_jitter),
+                    'label' => 'Jitter (ms)',
+                    'data' => $results->map(fn ($item) => round($item->ping_jitter, 2)),
                     'borderColor' => 'rgb(139, 92, 246)',
                     'backgroundColor' => 'rgba(139, 92, 246, 0.1)',
                     'pointBackgroundColor' => 'rgb(139, 92, 246)',
+                    'fill' => true,
+                    'cubicInterpolationMode' => 'monotone',
+                    'tension' => 0.4,
+                    'pointRadius' => 0,
+                    'pointRadius' => count($results) <= 24 ? 3 : 0,
+                ],
+                [
+                    'label' => 'Packet Loss (%)',
+                    'data' => $results->map(fn ($item) => $item->packet_loss),
+                    'borderColor' => 'rgb(248, 43, 12)',
+                    'backgroundColor' => 'rgba(248, 43, 12, 0.1)',
+                    'pointBackgroundColor' => 'rgb(248, 43, 12)',
                     'fill' => true,
                     'cubicInterpolationMode' => 'monotone',
                     'tension' => 0.4,
@@ -84,12 +96,31 @@ class RecentPingChartWidget extends ChartWidget
             ],
             'scales' => [
                 'y' => [
+                    'type' => 'linear',
+                    'position' => 'left',
                     'beginAtZero' => config('app.chart_begin_at_zero'),
                     'title' => [
                         'display' => true,
                         'text' => 'ms',
                     ],
-                    'grace' => 2,
+                    'grid' => [
+                        'display' => true,
+                        'drawBorder' => false,
+                    ],
+                ],
+                'right-y-axis' => [
+                    'type' => 'linear',
+                    'position' => 'right',
+                    'beginAtZero' => config('app.chart_begin_at_zero'),
+                    'title' => [
+                        'display' => true,
+                        'text' => '(%)',
+                    ],
+                    'grid' => [
+                        'display' => false,
+                        'drawBorder' => false,
+                    ],
+                'grace' => 2,
                 ],
             ],
         ];
