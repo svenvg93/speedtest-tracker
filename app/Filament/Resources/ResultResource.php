@@ -17,7 +17,6 @@ use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -401,38 +400,7 @@ class ResultResource extends Resource
                         false: fn (Builder $query) => $query->where('healthy', false),
                         blank: fn (Builder $query) => $query,
                     ),
-                Tables\Filters\Filter::make('created_at')
-                    ->form([
-                        Forms\Components\DatePicker::make('created_from')
-                            ->label('Date From')
-                            ->native(false)
-                            ->placeholder(fn (): string => now()->subYear()->format('M d, Y')),
-                        Forms\Components\DatePicker::make('created_until')
-                            ->label('Date Until')
-                            ->native(false)
-                            ->placeholder(fn (): string => now()->format('M d, Y')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when($data['created_from'], fn ($q, $date) => $q->where('created_at', '>=', Carbon::parse($date)->startOfDay()))
-                            ->when($data['created_until'], fn ($q, $date) => $q->where('created_at', '<=', Carbon::parse($date)->endOfDay()));
-                    })
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-
-                        if ($data['created_from'] ?? false) {
-                            $indicators[] = 'From '.Carbon::parse($data['created_from'])->toFormattedDateString();
-                        }
-
-                        if ($data['created_until'] ?? false) {
-                            $indicators[] = 'Until '.Carbon::parse($data['created_until'])->toFormattedDateString();
-                        }
-
-                        return $indicators;
-                    }),
-            ],
-                layout: FiltersLayout::Modal,
-            )
+            ])
             ->filtersFormColumns(2)
             ->actions([
                 Tables\Actions\ActionGroup::make([
