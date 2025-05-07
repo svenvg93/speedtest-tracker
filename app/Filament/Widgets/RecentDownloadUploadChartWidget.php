@@ -88,7 +88,6 @@ class RecentDownloadUploadChartWidget extends ChartWidget
                         'display' => true,
                         'text' => 'Mbps',
                     ],
-                    'grace' => 2,
                 ],
             ],
         ];

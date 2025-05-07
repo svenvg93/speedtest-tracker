@@ -46,7 +46,7 @@ class RecentPingChartWidget extends ChartWidget
             'datasets' => [
                 [
                     'label' => 'Ping',
-                    'data' => $results->map(fn ($item) => $item->ping),
+                    'data' => $results->map(fn ($item) => is_numeric($item->ping) ? round($item->ping, 2) : null),
                     'borderColor' => 'rgba(16, 185, 129)',
                     'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
                     'pointBackgroundColor' => 'rgba(16, 185, 129)',
@@ -57,7 +57,7 @@ class RecentPingChartWidget extends ChartWidget
                 ],
                 [
                     'label' => 'Jitter',
-                    'data' => $results->map(fn ($item) => $item->ping_jitter),
+                    'data' => $results->map(fn ($item) => is_numeric($item->ping_jitter) ? round($item->ping_jitter, 2) : null),
                     'borderColor' => 'rgb(139, 92, 246)',
                     'backgroundColor' => 'rgba(139, 92, 246, 0.1)',
                     'pointBackgroundColor' => 'rgb(139, 92, 246)',

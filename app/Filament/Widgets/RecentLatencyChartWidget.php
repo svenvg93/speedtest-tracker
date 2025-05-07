@@ -47,7 +47,7 @@ class RecentLatencyChartWidget extends ChartWidget
             'datasets' => [
                 [
                     'label' => 'Download',
-                    'data' => $results->map(fn ($item) => round($item->download_latency_iqm, 2)),
+                    'data' => $results->map(fn ($item) => is_numeric($item->download_latency_iqm) ? round($item->download_latency_iqm, 2) : null),
                     'borderColor' => 'rgba(14, 165, 233)',
                     'backgroundColor' => 'rgba(14, 165, 233, 0.1)',
                     'pointBackgroundColor' => 'rgba(14, 165, 233)',
@@ -58,7 +58,8 @@ class RecentLatencyChartWidget extends ChartWidget
                 ],
                 [
                     'label' => 'Upload',
-                    'data' => $results->map(fn ($item) => round($item->upload_latency_iqm, 2)),
+                    'data' => $results->map(fn ($item) => is_numeric($item->upload_latency_iqm) ? round($item->upload_latency_iqm, 2) : null),
+                    'borderColor' => 'rgba(14, 165, 233)',
                     'borderColor' => 'rgba(139, 92, 246)',
                     'backgroundColor' => 'rgba(139, 92, 246, 0.1)',
                     'pointBackgroundColor' => 'rgba(139, 92, 246)',
@@ -93,7 +94,6 @@ class RecentLatencyChartWidget extends ChartWidget
                         'display' => true,
                         'text' => 'ms',
                     ],
-                    'grace' => 2,
                 ],
             ],
         ];
