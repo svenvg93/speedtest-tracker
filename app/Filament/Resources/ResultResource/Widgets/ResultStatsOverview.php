@@ -26,18 +26,18 @@ class ResultStatsOverview extends StatsOverviewWidget
 
         return [
             Stat::make('All Tests', $total)
-                ->description('Recorded in the system'),
+                ->description('Total number of test attempts recorded'),
 
             Stat::make('In Progress', $other)
-                ->description("{$this->getPercentage($other, $total)}% of tests currently running")
+                ->description("{$other} tests ({$this->getPercentage($other, $total)}%) are not yet completed")
                 ->color('info'),
 
             Stat::make('Successful', $completed)
-                ->description("{$this->getPercentage($completed, $total)}% completed without issues")
+                ->description("{$completed} tests ({$this->getPercentage($completed, $total)}%) completed successfully")
                 ->color('success'),
 
             Stat::make('Failed', $failed)
-                ->description("{$this->getPercentage($failed, $total)}% encountered errors")
+                ->description("{$failed} tests ({$this->getPercentage($failed, $total)}%) failed to complete")
                 ->color('danger'),
         ];
     }
