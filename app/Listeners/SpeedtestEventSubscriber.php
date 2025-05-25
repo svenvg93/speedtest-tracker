@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\SpeedtestCompleted;
 use App\Events\SpeedtestFailed;
 use App\Jobs\Influxdb\v2\WriteResult;
+use App\Jobs\Prometheus\UpdatePrometheusMetrics;
 use App\Settings\DataIntegrationSettings;
 use Illuminate\Events\Dispatcher;
 
@@ -20,6 +21,10 @@ class SpeedtestEventSubscriber
         if ($settings->influxdb_v2_enabled) {
             WriteResult::dispatch($event->result);
         }
+
+        if ($settings->influxdb_v2_enabled) {
+            UpdatePrometheusMetrics::dispatch($event->result);
+        }
     }
 
     /**
@@ -31,6 +36,10 @@ class SpeedtestEventSubscriber
 
         if ($settings->influxdb_v2_enabled) {
             WriteResult::dispatch($event->result);
+        }
+
+        if ($settings->influxdb_v2_enabled) {
+            UpdatePrometheusMetrics::dispatch($event->result);
         }
     }
 
