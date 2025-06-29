@@ -2,13 +2,21 @@
 
 namespace App\Filament\Widgets;
 
-use App\Enums\ResultStatus;
 use App\Models\Result;
+use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
-class RecentUploadLatencyChartWidget extends ChartWidget
+class RecentLatencyChartWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Upload Latency';
+    use InteractsWithPageFilters;
+
+    protected static ?string $heading = 'Download / Upload Latency';
+
+    public function getDescription(): string
+    {
+        return 'Average Latency under load';
+    }
 
     protected int|string|array $columnSpan = 'full';
 
@@ -16,30 +24,21 @@ class RecentUploadLatencyChartWidget extends ChartWidget
 
     protected static ?string $pollingInterval = '60s';
 
-    public ?string $filter = '24h';
-
-    protected function getFilters(): ?array
-    {
-        return [
-            '24h' => 'Last 24h',
-            'week' => 'Last week',
-            'month' => 'Last month',
-        ];
-    }
-
     protected function getData(): array
     {
+        // Ensure that startDate and endDate are treated as Carbon instances
+        $startDate = $this->filters['startDate'] ?? now()->subWeek();
+        $endDate = $this->filters['endDate'] ?? now();
+
+        // Convert dates to the correct timezone without resetting the time
+        $startDate = Carbon::parse($startDate)->timezone(config('app.timezone'));
+        $endDate = Carbon::parse($endDate)->timezone(config('app.timezone'));
+
         $results = Result::query()
             ->select(['id', 'data', 'created_at'])
-            ->where('status', '=', ResultStatus::Completed)
-            ->when($this->filter == '24h', function ($query) {
-                $query->where('created_at', '>=', now()->subDay());
-            })
-            ->when($this->filter == 'week', function ($query) {
-                $query->where('created_at', '>=', now()->subWeek());
-            })
-            ->when($this->filter == 'month', function ($query) {
-                $query->where('created_at', '>=', now()->subMonth());
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($this->filters['server'] ?? null, function ($query, $serverName) {
+                $query->where('data->server->name', $serverName);
             })
             ->orderBy('created_at')
             ->get();
@@ -47,19 +46,8 @@ class RecentUploadLatencyChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Average (ms)',
-                    'data' => $results->map(fn ($item) => $item->upload_latency_iqm),
-                    'borderColor' => 'rgba(16, 185, 129)',
-                    'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
-                    'pointBackgroundColor' => 'rgba(16, 185, 129)',
-                    'fill' => true,
-                    'cubicInterpolationMode' => 'monotone',
-                    'tension' => 0.4,
-                    'pointRadius' => count($results) <= 24 ? 3 : 0,
-                ],
-                [
-                    'label' => 'High (ms)',
-                    'data' => $results->map(fn ($item) => $item->upload_latency_high),
+                    'label' => 'Download',
+                    'data' => $results->map(fn ($item) => is_numeric($item->download_latency_iqm) ? round($item->download_latency_iqm, 2) : null),
                     'borderColor' => 'rgba(14, 165, 233)',
                     'backgroundColor' => 'rgba(14, 165, 233, 0.1)',
                     'pointBackgroundColor' => 'rgba(14, 165, 233)',
@@ -69,8 +57,9 @@ class RecentUploadLatencyChartWidget extends ChartWidget
                     'pointRadius' => count($results) <= 24 ? 3 : 0,
                 ],
                 [
-                    'label' => 'Low (ms)',
-                    'data' => $results->map(fn ($item) => $item->upload_latency_low),
+                    'label' => 'Upload',
+                    'data' => $results->map(fn ($item) => is_numeric($item->upload_latency_iqm) ? round($item->upload_latency_iqm, 2) : null),
+                    'borderColor' => 'rgba(14, 165, 233)',
                     'borderColor' => 'rgba(139, 92, 246)',
                     'backgroundColor' => 'rgba(139, 92, 246, 0.1)',
                     'pointBackgroundColor' => 'rgba(139, 92, 246)',
@@ -101,7 +90,10 @@ class RecentUploadLatencyChartWidget extends ChartWidget
             'scales' => [
                 'y' => [
                     'beginAtZero' => config('app.chart_begin_at_zero'),
-                    'grace' => 2,
+                    'title' => [
+                        'display' => true,
+                        'text' => 'ms',
+                    ],
                 ],
             ],
         ];

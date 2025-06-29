@@ -2,22 +2,23 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Widgets\RecentDownloadChartWidget;
-use App\Filament\Widgets\RecentDownloadLatencyChartWidget;
-use App\Filament\Widgets\RecentJitterChartWidget;
+use App\Filament\Widgets\AverageStatsWidget;
+use App\Filament\Widgets\RecentDownloadUploadChartWidget;
+use App\Filament\Widgets\RecentLatencyChartWidget;
 use App\Filament\Widgets\RecentPingChartWidget;
-use App\Filament\Widgets\RecentUploadChartWidget;
-use App\Filament\Widgets\RecentUploadLatencyChartWidget;
 use App\Filament\Widgets\StatsOverviewWidget;
+use App\Forms\Components\ChartFilter;
 use Carbon\Carbon;
 use Cron\CronExpression;
-use Filament\Pages\Dashboard as BasePage;
+use Filament\Forms\Form;
+use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 
-class Dashboard extends BasePage
+class Dashboard extends BaseDashboard
 {
-    protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
+    use HasFiltersForm;
 
-    protected static string $view = 'filament.pages.dashboard';
+    protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
 
     public function getSubheading(): ?string
     {
@@ -34,16 +35,25 @@ class Dashboard extends BasePage
         return 'Next speedtest at: '.$nextRunDate;
     }
 
+    public function filtersForm(Form $form): Form
+    {
+        return ChartFilter::make($form);
+    }
+
     protected function getHeaderWidgets(): array
     {
         return [
             StatsOverviewWidget::make(),
-            RecentDownloadChartWidget::make(),
-            RecentUploadChartWidget::make(),
+        ];
+    }
+
+    public function getWidgets(): array
+    {
+        return [
+            AverageStatsWidget::make(),
+            RecentDownloadUploadChartWidget::make(),
             RecentPingChartWidget::make(),
-            RecentJitterChartWidget::make(),
-            RecentDownloadLatencyChartWidget::make(),
-            RecentUploadLatencyChartWidget::make(),
+            RecentLatencyChartWidget::make(),
         ];
     }
 }

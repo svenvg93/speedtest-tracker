@@ -2,14 +2,16 @@
 
 namespace App\Filament\Widgets;
 
-use App\Enums\ResultStatus;
-use App\Helpers\Average;
 use App\Models\Result;
+use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class RecentPingChartWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Ping (ms)';
+    use InteractsWithPageFilters;
+
+    protected static ?string $heading = 'Ping / Jitter';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -17,30 +19,21 @@ class RecentPingChartWidget extends ChartWidget
 
     protected static ?string $pollingInterval = '60s';
 
-    public ?string $filter = '24h';
-
-    protected function getFilters(): ?array
-    {
-        return [
-            '24h' => 'Last 24h',
-            'week' => 'Last week',
-            'month' => 'Last month',
-        ];
-    }
-
     protected function getData(): array
     {
+        // Ensure that startDate and endDate are treated as Carbon instances
+        $startDate = $this->filters['startDate'] ?? now()->subWeek();
+        $endDate = $this->filters['endDate'] ?? now();
+
+        // Convert dates to the correct timezone without resetting the time
+        $startDate = Carbon::parse($startDate)->timezone(config('app.timezone'));
+        $endDate = Carbon::parse($endDate)->timezone(config('app.timezone'));
+
         $results = Result::query()
-            ->select(['id', 'ping', 'created_at'])
-            ->where('status', '=', ResultStatus::Completed)
-            ->when($this->filter == '24h', function ($query) {
-                $query->where('created_at', '>=', now()->subDay());
-            })
-            ->when($this->filter == 'week', function ($query) {
-                $query->where('created_at', '>=', now()->subWeek());
-            })
-            ->when($this->filter == 'month', function ($query) {
-                $query->where('created_at', '>=', now()->subMonth());
+            ->select(['id', 'data', 'ping', 'created_at'])
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($this->filters['server'] ?? null, function ($query, $serverName) {
+                $query->where('data->server->name', $serverName);
             })
             ->orderBy('created_at')
             ->get();
@@ -48,8 +41,8 @@ class RecentPingChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Ping',
-                    'data' => $results->map(fn ($item) => $item->ping),
+                    'label' => 'Ping (ms)',
+                    'data' => $results->map(fn ($item) => is_numeric($item->ping) ? round($item->ping, 2) : null),
                     'borderColor' => 'rgba(16, 185, 129)',
                     'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
                     'pointBackgroundColor' => 'rgba(16, 185, 129)',
@@ -59,14 +52,16 @@ class RecentPingChartWidget extends ChartWidget
                     'pointRadius' => count($results) <= 24 ? 3 : 0,
                 ],
                 [
-                    'label' => 'Average',
-                    'data' => array_fill(0, count($results), Average::averagePing($results)),
-                    'borderColor' => 'rgb(243, 7, 6, 1)',
-                    'pointBackgroundColor' => 'rgb(243, 7, 6, 1)',
-                    'fill' => false,
+                    'label' => 'Jitter (ms)',
+                    'data' => $results->map(fn ($item) => is_numeric($item->ping_jitter) ? round($item->ping_jitter, 2) : null),
+                    'borderColor' => 'rgb(139, 92, 246)',
+                    'backgroundColor' => 'rgba(139, 92, 246, 0.1)',
+                    'pointBackgroundColor' => 'rgb(139, 92, 246)',
+                    'fill' => true,
                     'cubicInterpolationMode' => 'monotone',
                     'tension' => 0.4,
                     'pointRadius' => 0,
+                    'pointRadius' => count($results) <= 24 ? 3 : 0,
                 ],
             ],
             'labels' => $results->map(fn ($item) => $item->created_at->timezone(config('app.display_timezone'))->format(config('app.chart_datetime_format'))),
@@ -90,7 +85,10 @@ class RecentPingChartWidget extends ChartWidget
             'scales' => [
                 'y' => [
                     'beginAtZero' => config('app.chart_begin_at_zero'),
-                    'grace' => 2,
+                    'title' => [
+                        'display' => true,
+                        'text' => 'ms',
+                    ],
                 ],
             ],
         ];

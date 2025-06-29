@@ -11,11 +11,7 @@
         @endisset
 
         <div class="col-span-full">
-            @livewire(\App\Filament\Widgets\RecentDownloadChartWidget::class)
-        </div>
-
-        <div class="col-span-full">
-            @livewire(\App\Filament\Widgets\RecentUploadChartWidget::class)
+            @livewire(\App\Filament\Widgets\RecentDownloadUploadChartWidget::class)
         </div>
 
         <div class="col-span-full">
@@ -23,15 +19,7 @@
         </div>
 
         <div class="col-span-full">
-            @livewire(\App\Filament\Widgets\RecentJitterChartWidget::class)
-        </div>
-
-        <div class="col-span-full">
-            @livewire(\App\Filament\Widgets\RecentDownloadLatencyChartWidget::class)
-        </div>
-
-        <div class="col-span-full">
-            @livewire(\App\Filament\Widgets\RecentUploadLatencyChartWidget::class)
+            @livewire(\App\Filament\Widgets\RecentLatencyChartWidget::class)
         </div>
 
     </div>
