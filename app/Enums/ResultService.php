@@ -2,10 +2,9 @@
 
 namespace App\Enums;
 
-use Filament\Support\Contracts\HasLabel;
 use Illuminate\Support\Str;
 
-enum ResultService: string implements HasLabel
+enum ResultService: string
 {
     case Faker = 'faker';
     case Ookla = 'ookla';
