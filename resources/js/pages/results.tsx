@@ -183,6 +183,8 @@ export default function ResultsPage() {
   const [selectedResult, setSelectedResult] = React.useState<Result | null>(null);
   const [comments, setComments] = React.useState("");
   const [showResultDetails, setShowResultDetails] = React.useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [selectedResultForDelete, setSelectedResultForDelete] = React.useState<Result | null>(null);
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 10,
@@ -532,10 +534,11 @@ export default function ResultsPage() {
       cell: ({ row }) => {
         const result = row.original;
         const user = (usePage().props as any)?.auth?.user || {};
-        function handleDelete() {
-          if (window.confirm('Delete this result?')) {
-            router.post(`/results/${result.id}`, { _method: 'delete' });
-          }
+        const handleDelete = (e: React.MouseEvent) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setSelectedResultForDelete(result);
+          setIsDeleteDialogOpen(true);
         }
         return (
           <DropdownMenu>
@@ -578,7 +581,12 @@ export default function ResultsPage() {
                   Update Comments
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem onClick={handleDelete} className="flex items-center text-red-600">
+              <DropdownMenuItem 
+                key={`delete-${result.id}`}
+                onClick={handleDelete} 
+                className="flex items-center text-red-600"
+                onSelect={(e) => e.preventDefault()}
+              >
                 <Trash className="mr-2 h-4 w-4" />
                 Delete
               </DropdownMenuItem>
@@ -619,6 +627,17 @@ export default function ResultsPage() {
     if (!window.confirm(`Delete ${selectedIds.length} selected records?`)) return;
     router.post('/results/delete', { ids: selectedIds, _method: 'delete' });
   }
+
+  const handleDeleteResult = () => {
+    if (!selectedResultForDelete) return;
+    
+    router.post(`/results/${selectedResultForDelete.id}`, { _method: 'delete' }, {
+      onSuccess: () => {
+        setIsDeleteDialogOpen(false);
+        setSelectedResultForDelete(null);
+      }
+    });
+  };
 
   return (
     <AppLayout breadcrumbs={[{ title: 'Results', href: '/results' }]}> 
@@ -819,12 +838,30 @@ export default function ResultsPage() {
         </DialogContent>
       </Dialog>
 
+      
+
       {/* Result Details Chart */}
       <ResultDetailsChart 
         result={selectedResult}
         open={showResultDetails}
         onOpenChange={setShowResultDetails}
       />
+
+      {/* Delete Result Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Result</DialogTitle>
+          </DialogHeader>
+          <p>Are you sure you want to delete this speedtest result? This action cannot be undone.</p>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button variant="destructive" onClick={handleDeleteResult}>Delete Result</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 } 

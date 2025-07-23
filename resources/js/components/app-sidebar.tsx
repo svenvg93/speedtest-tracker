@@ -24,15 +24,6 @@ const getMainNavItems = (user: any): NavItem[] => {
         },
     ];
 
-    // Only show API Tokens for admin users
-    if (user?.is_admin) {
-        items.push({
-            title: 'API Tokens',
-            url: '/api-tokens',
-            icon:  Key,
-        });
-    }
-
     return items;
 };
 
@@ -44,6 +35,14 @@ const getApplicationNavItems = (user: any): NavItem[] => {
             title: 'Users',
             url: '/users',
             icon:  Users,
+        });
+    }
+
+    if (user?.is_admin) {
+        items.push({
+            title: 'API Tokens',
+            url: '/api-tokens',
+            icon:  Key,
         });
     }
     

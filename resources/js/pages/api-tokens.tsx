@@ -89,6 +89,8 @@ export default function ApiTokensPage() {
   const [showEditDialog, setShowEditDialog] = React.useState(false);
   const [showNewTokenDialog, setShowNewTokenDialog] = React.useState(false);
   const [selectedToken, setSelectedToken] = React.useState<ApiToken | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+  const [selectedTokenForDelete, setSelectedTokenForDelete] = React.useState<ApiToken | null>(null);
   const [currentNewToken, setCurrentNewToken] = React.useState<{
     id: number;
     name: string;
@@ -269,13 +271,8 @@ export default function ApiTokensPage() {
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  if (confirm('Are you sure you want to delete this API token?')) {
-                    router.delete(`/api-tokens/${token.id}`, {
-                      onSuccess: () => {
-                        router.visit(window.location.pathname, { only: ['tokens'], preserveScroll: true });
-                      }
-                    });
-                  }
+                  setSelectedTokenForDelete(token);
+                  setIsDeleteDialogOpen(true);
                 }}
                 className="text-destructive"
               >
@@ -365,6 +362,18 @@ export default function ApiTokensPage() {
         }
       });
     }
+  };
+
+  const handleDeleteToken = () => {
+    if (!selectedTokenForDelete) return;
+    
+    router.delete(`/api-tokens/${selectedTokenForDelete.id}`, {
+      onSuccess: () => {
+        setIsDeleteDialogOpen(false);
+        setSelectedTokenForDelete(null);
+        router.visit(window.location.pathname, { only: ['tokens'], preserveScroll: true });
+      }
+    });
   };
 
   const copyToClipboard = async (text: string) => {
@@ -759,6 +768,22 @@ export default function ApiTokensPage() {
             <DialogClose asChild>
               <Button>I've copied the token</Button>
             </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Token Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete API Token</DialogTitle>
+          </DialogHeader>
+          <p>Are you sure you want to delete the API token "{selectedTokenForDelete?.name}"? This action cannot be undone.</p>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button variant="destructive" onClick={handleDeleteToken}>Delete Token</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

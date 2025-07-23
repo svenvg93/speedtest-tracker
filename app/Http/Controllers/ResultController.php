@@ -49,13 +49,13 @@ class ResultController extends Controller
 
     public function destroy($id)
     {
-        \App\Models\Result::findOrFail($id)->delete();
+        Result::findOrFail($id)->delete();
         return redirect()->route('results.index')->with('success', 'Result deleted.');
     }
 
     public function updateComments(Request $request, $id)
     {
-        $result = \App\Models\Result::findOrFail($id);
+        $result = Result::findOrFail($id);
         $result->comments = $request->input('comments');
         $result->save();
         return back()->with('success', 'Comments updated.');

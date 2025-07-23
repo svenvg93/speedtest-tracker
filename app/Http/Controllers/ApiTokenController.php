@@ -16,7 +16,7 @@ class ApiTokenController extends Controller
     public function index(): Response
     {
         // Check if user is admin
-        if (!Auth::user()->is_admin) {
+        if (!Auth::user()->isAdmin) {
             abort(403, 'Access denied. Admin privileges required.');
         }
 
@@ -47,7 +47,7 @@ class ApiTokenController extends Controller
     public function store(Request $request)
     {
         // Check if user is admin
-        if (!Auth::user()->is_admin) {
+        if (!Auth::user()->isAdmin) {
             abort(403, 'Access denied. Admin privileges required.');
         }
 
@@ -81,7 +81,7 @@ class ApiTokenController extends Controller
     public function update(Request $request, string $id)
     {
         // Check if user is admin
-        if (!Auth::user()->is_admin) {
+        if (!Auth::user()->isAdmin) {
             abort(403, 'Access denied. Admin privileges required.');
         }
 
@@ -116,7 +116,7 @@ class ApiTokenController extends Controller
     public function destroy(string $id)
     {
         // Check if user is admin
-        if (!Auth::user()->is_admin) {
+        if (!Auth::user()->isAdmin) {
             abort(403, 'Access denied. Admin privileges required.');
         }
 
@@ -135,7 +135,7 @@ class ApiTokenController extends Controller
     public function destroyMany(Request $request)
     {
         // Check if user is admin
-        if (!Auth::user()->is_admin) {
+        if (!Auth::user()->isAdmin) {
             abort(403, 'Access denied. Admin privileges required.');
         }
 

@@ -44,16 +44,6 @@ export default function DashboardPage() {
   }));
   const [selectedServers, setSelectedServers] = React.useState<string[]>(['all']);
 
-  // Debug logging for date range
-  React.useEffect(() => {
-    console.log('Date range changed:', {
-      from: range.from?.toISOString(),
-      to: range.to?.toISOString(),
-      fromLocal: range.from?.toLocaleString(),
-      toLocal: range.to?.toLocaleString()
-    });
-  }, [range]);
-
   // Placeholder stats for demonstration
   const stats = [
     { label: "Latest test", value: latest?.healthy ? "Healthy" : "Unhealthy", description: "", badge: { icon: null, text: "", up: undefined }, footer: [] },

@@ -95,7 +95,6 @@ export function DatePicker({ value, onChange, placeholder = "Pick a date and tim
           className
         )}
         onClick={() => {
-          console.log('DatePicker button clicked');
           setOpen(!open);
         }}
       >

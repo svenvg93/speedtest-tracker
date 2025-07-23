@@ -96,28 +96,6 @@ export default function UsersPage() {
 
   const columns: ColumnDef<User>[] = [
     {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
       accessorKey: "id",
       header: ({ column }) => {
         return (
@@ -399,8 +377,7 @@ export default function UsersPage() {
         </div>
         <div className="flex items-center justify-between px-4 mt-6">
           <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+            {table.getFilteredRowModel().rows.length} user(s).
           </div>
           <div className="flex w-full items-center gap-8 lg:w-fit">
             <div className="hidden items-center gap-2 lg:flex">
@@ -472,18 +449,6 @@ export default function UsersPage() {
                 <IconChevronsRight />
               </Button>
             </div>
-          </div>
-        </div>
-        <div className="flex items-center justify-between space-x-2 py-4">
-          <div className="space-x-2">
-            {table.getSelectedRowModel().rows.length > 0 && (
-              <Button
-                variant="destructive"
-                onClick={handleDeleteSelected}
-              >
-                Delete Selected
-              </Button>
-            )}
           </div>
         </div>
       </div>
