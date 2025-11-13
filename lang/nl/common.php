@@ -13,15 +13,12 @@ return [
     |
     */
 
-    'api_token' => 'API Token',
-    'api_tokens' => 'API Tokens',
     'dashboard' => 'Dashboard',
     'disable' => 'Uitschakelen',
     'enable' => 'Inschakelen',
     'token' => 'Token',
     'speedtest' => 'Snelheidstest',
     'speedtest_tracker' => 'Snelheids Tracker',
-    'url' => 'URL',
 
     // Result Overview
     'result_overview' => 'Resultaat overzicht',
@@ -37,6 +34,9 @@ return [
     'upload' => 'Uploaden',
     'ping' => 'Ping',
     'packet_loss' => 'Pakket Verlies',
+    'latest_download' => 'Latest Download',
+    'latest_upload' => 'Latest Upload',
+    'latest_ping' => 'Latest Ping',
 
     // Latency Sections
     'download_latency' => 'Download Latency',
