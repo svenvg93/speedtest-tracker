@@ -12,7 +12,7 @@ return [
     */
 
     'platform' => 'Platform',
-    'role' => 'Role',
+    'role' => 'Functie',
     'id' => 'ID',
 
 ];
