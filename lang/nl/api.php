@@ -15,33 +15,33 @@ return [
 
     'api_token' => 'API Token',
     'api_tokens' => 'API Tokens',
-    'create_token' => 'Create API Token',
+    'create_token' => 'API-token aanmaken',
     'token' => 'Token',
 
     // Form Fields
-    'name' => 'Name',
-    'abilities' => 'Abilities',
-    'expires_at' => 'Expires at',
-    'expires_at_helper' => 'Leave empty for no expiration',
+    'name' => 'naam',
+    'abilities' => 'Vaardigheden',
+    'expires_at' => 'Verloopt op',
+    'expires_at_helper' => 'Laat leeg voor geen vervaldatum',
 
     // Abilities
-    'read_results' => 'Read results',
-    'run_speedtest' => 'Run speedtest',
-    'list_servers' => 'List servers',
+    'read_results' => 'Lees resultaten',
+    'run_speedtest' => 'Snelheidstest uitvoeren',
+    'list_servers' => 'Toon servers',
 
     // Ability Descriptions
-    'read_results_description' => 'Grant this token permission to read results and statistics.',
-    'run_speedtest_description' => 'Grant this token permission to run speedtests.',
-    'list_servers_description' => 'Grant this token permission to list available servers.',
+    'read_results_description' => 'Verleen deze token toestemming om resultaten en statistieken te lezen.',
+    'run_speedtest_description' => 'Verleen deze token toestemming om speedtesten uit te voeren.',
+    'list_servers_description' => 'Verleen dit token toestemming om beschikbare servers te tonen.',
 
     // Table Columns
-    'created_at' => 'Created At',
-    'last_used_at' => 'Last Used At',
+    'created_at' => 'Aangemaakt op',
+    'last_used_at' => 'Laatst gebruikt op',
 
     // Filters
-    'token_status' => 'Token Status',
-    'all_tokens' => 'All tokens',
-    'active_tokens' => 'Active tokens',
-    'expired_tokens' => 'Expired tokens',
+    'token_status' => 'Token status',
+    'all_tokens' => 'Alle tokens',
+    'active_tokens' => 'Actieve tokens',
+    'expired_tokens' => 'Verlopen tokens',
 
 ];
