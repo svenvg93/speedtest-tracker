@@ -2,6 +2,6 @@
 
 return [
     // Ookla server list
-    'list_servers' => 'List servers',
+    'list_servers' => 'Toon servers',
     'ookla_servers' => 'Ookla servers',
 ];
