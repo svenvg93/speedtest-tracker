@@ -12,12 +12,12 @@ return [
     */
 
     // InfluxDB Jobs
-    'influxdb_build_failed' => 'Failed to build write to Influxdb.',
-    'influxdb_bulk_complete' => 'Finished bulk data load to Influxdb.',
-    'influxdb_test_failed' => 'Influxdb test failed',
-    'influxdb_test_success' => 'Successfully sent test data to Influxdb',
+    'influxdb_build_failed' => 'Kan schrijven naar Influxdb niet maken.',
+    'influxdb_bulk_complete' => 'Beëindigde bulkgegevensbelasting naar influxdb.',
+    'influxdb_test_failed' => 'Influxdb test mislukt',
+    'influxdb_test_success' => 'Test gegevens succesvol verzonden naar Influxdb',
 
     // Truncate Jobs
-    'results_truncated' => 'Results table truncated!',
+    'results_truncated' => 'Resultatentabel afgekapt!',
 
 ];
