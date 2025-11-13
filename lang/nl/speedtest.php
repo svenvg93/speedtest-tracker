@@ -11,20 +11,20 @@ return [
     |
     */
 
-    'public_dashboard' => 'Public Dashboard',
-    'select_server' => 'Select Server',
-    'server_helper_text' => 'Leave empty to run the speedtest without specifying a server. Blocked servers will be skipped.',
-    'manual_servers' => 'Manual servers',
-    'closest_servers' => 'Closest servers',
-    'speedtest_started' => 'Speedtest started',
-    'run_speedtest' => 'Run Speedtest',
-    'start' => 'Start',
-    'speedtest' => 'Speedtest',
-    'speedtest_completed' => 'Speedtest completed',
+    'public_dashboard' => 'Openbaar Dashboard',
+    'select_server' => 'Selecteer Server',
+    'server_helper_text' => 'Laat leeg om de snelheidstest uit te voeren zonder een server op te geven. Geblokkeerde servers zullen worden overgeslagen.',
+    'manual_servers' => 'Handmatige servers',
+    'closest_servers' => 'Dichtstbijzijnde servers',
+    'speedtest_started' => 'Snelheids gestart',
+    'run_speedtest' => 'Start Snelheidstest',
+    'start' => 'Beginnen',
+    'speedtest' => 'Snelheidstest',
+    'speedtest_completed' => 'Snelheids voltooid',
 
     // Threshold notifications
-    'download_threshold_breached' => 'Download threshold breached!',
-    'upload_threshold_breached' => 'Upload threshold breached!',
-    'ping_threshold_breached' => 'Ping threshold breached!',
+    'download_threshold_breached' => 'Drempelwaarde voor downloaden doorbroken!',
+    'upload_threshold_breached' => 'Upload drempelwaarde gelekt!',
+    'ping_threshold_breached' => 'Ping drempelwaarde doorgedrukt!',
 
 ];
