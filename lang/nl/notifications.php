@@ -15,72 +15,72 @@ return [
 
     // Database Notifications
     'database' => [
-        'received' => 'Test notification received',
+        'received' => 'Test melding ontvangen',
         'pong' => 'Pong!',
-        'sent' => 'Test notification sent',
+        'sent' => 'Test melding verzonden',
         'ping' => 'Ping!',
     ],
 
     // Discord Notifications
     'discord' => [
-        'add' => 'Please add at least one Discord webhook.',
-        'payload' => 'This is a test notification from Speedtest Tracker.',
-        'sent' => 'Test notification sent to Discord.',
+        'add' => 'Voeg ten minste één Discord webhook toe.',
+        'payload' => 'Dit is een test melding van Snel Testen Tracker.',
+        'sent' => 'Testmelding verzonden naar Discord.',
     ],
 
     // Gotify Notifications (Note: typo in code - 'gotfy' instead of 'gotify')
     'gotfy' => [
-        'add' => 'Please add at least one Gotify webhook.',
-        'payload' => 'This is a test notification from Speedtest Tracker.',
-        'sent' => 'Test notification sent to Gotify.',
+        'add' => 'Voeg ten minste één Gotify webhook toe.',
+        'payload' => 'Dit is een test melding van Snel Testen Tracker.',
+        'sent' => 'Test melding verzonden naar Gotify.',
     ],
 
     // Health Check Notifications
     'health_check' => [
-        'add' => 'Please add at least one Healthchecks.io webhook.',
-        'payload' => 'This is a test notification from Speedtest Tracker.',
-        'sent' => 'Test notification sent to Healthchecks.io.',
+        'add' => 'Voeg ten minste één Healthchecks.io webhook toe.',
+        'payload' => 'Dit is een test melding van Snel Testen Tracker.',
+        'sent' => 'Test melding verzonden naar Healthchecks.io.',
     ],
 
     // Mail Notifications
     'mail' => [
-        'add' => 'Please add at least one email recipient.',
-        'sent' => 'Test email sent successfully.',
+        'add' => 'Voeg ten minste één e-mailontvanger toe.',
+        'sent' => 'Test e-mail succesvol verzonden.',
     ],
 
     // Ntfy Notifications
     'ntfy' => [
-        'add' => 'Please add at least one Ntfy webhook.',
-        'payload' => 'This is a test notification from Speedtest Tracker.',
-        'sent' => 'Test notification sent to Ntfy.',
+        'add' => 'Voeg ten minste één Ntfy webhook toe.',
+        'payload' => 'Dit is een test melding van Snel Testen Tracker.',
+        'sent' => 'Testmelding verzonden naar Ntfy.',
     ],
 
     // Pushover Notifications
     'pushover' => [
-        'add' => 'Please add at least one Pushover webhook.',
-        'payload' => 'This is a test notification from Speedtest Tracker.',
-        'sent' => 'Test notification sent to Pushover.',
+        'add' => 'Voeg ten minste één Pushover webhook toe.',
+        'payload' => 'Dit is een test melding van Snel Testen Tracker.',
+        'sent' => 'Test melding verzonden naar Pushover.',
     ],
 
     // Slack Notifications
     'slack' => [
-        'add' => 'Please add at least one Slack webhook.',
-        'payload' => 'This is a test notification from Speedtest Tracker.',
-        'sent' => 'Test notification sent to Slack.',
+        'add' => 'Voeg ten minste één Slack webhook toe.',
+        'payload' => 'Dit is een test melding van Snel Testen Tracker.',
+        'sent' => 'Testmelding verzonden naar Slack.',
     ],
 
     // Telegram Notifications
     'telegram' => [
-        'add' => 'Please add at least one Telegram recipient.',
-        'sent' => 'Test notification sent to Telegram.',
-        'test_message' => '👋 Testing the Telegram notification channel.',
+        'add' => 'Voeg ten minste één ontvangers voor Telegram toe.',
+        'sent' => 'Test melding verzonden naar Telegram.',
+        'test_message' => '👋 Telegram meldingskanaal testen.',
     ],
 
     // Webhook Notifications
     'webhook' => [
-        'add' => 'Please add at least one webhook.',
-        'payload' => 'Speedtest Tracker Test',
-        'sent' => 'Test webhook sent successfully.',
+        'add' => 'Voeg ten minste één webhook toe.',
+        'payload' => 'Snelheidstest Tracker Test',
+        'sent' => 'Test webhook succesvol verzonden.',
     ],
 
 ];
