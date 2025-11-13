@@ -10,103 +10,103 @@ return [
     |
     */
 
-    'bucket' => 'Bucket',
-    'data_integration' => 'Data Integration',
-    'enable_influxdb' => 'Enable InfluxDB Integration',
+    'bucket' => 'Emmer',
+    'data_integration' => 'Data integratie',
+    'enable_influxdb' => 'InfluxDB integratie inschakelen',
     'influxdb' => 'InfluxDB',
-    'influxdb_description' => 'Configure InfluxDB integration settings.',
-    'organization' => 'Organization',
-    'settings' => 'Settings',
+    'influxdb_description' => 'Configureer InfluxDB integratie instellingen.',
+    'organization' => 'Rekening',
+    'settings' => 'Instellingen',
     'url' => 'URL',
-    'verify_ssl' => 'Verify SSL Certificate',
+    'verify_ssl' => 'Controleer SSL Certificaat',
 
     // Notification Settings
-    'notifications' => 'Notifications',
-    'triggers' => 'Triggers',
-    'notify_on_every_speedtest_run' => 'Notify on every speedtest run',
-    'notify_on_threshold_failures' => 'Notify on threshold failures',
+    'notifications' => 'Notificaties',
+    'triggers' => 'Triggeraars',
+    'notify_on_every_speedtest_run' => 'Notificatie bij elke snelheidstest uitgevoerd',
+    'notify_on_threshold_failures' => 'Melding bij drempelfouten',
 
     // Database Notifications
     'database' => 'Database',
-    'database_description' => 'Configure database notification settings.',
-    'enable_database_notifications' => 'Enable Database Notifications',
-    'test_database_channel' => 'Test Database Channel',
+    'database_description' => 'Instellingen database meldingen configureren.',
+    'enable_database_notifications' => 'Database notificaties inschakelen',
+    'test_database_channel' => 'Test database kanaal',
 
     // Email Notifications
-    'mail' => 'Mail',
-    'enable_mail_notifications' => 'Enable Mail Notifications',
-    'recipients' => 'Recipients',
-    'email_address' => 'Email Address',
-    'test_mail_channel' => 'Test Mail Channel',
+    'mail' => 'E-mailen',
+    'enable_mail_notifications' => 'Schakel e-mailnotificaties in',
+    'recipients' => 'Ontvangers',
+    'email_address' => 'Uw e-mailadres',
+    'test_mail_channel' => 'Test Mail Kanaal',
 
     // Webhook Notifications
     'webhook' => 'Webhook',
     'webhooks' => 'Webhooks',
-    'enable_webhook_notifications' => 'Enable Webhook Notifications',
-    'test_webhook_channel' => 'Test Webhook Channel',
+    'enable_webhook_notifications' => 'Webhook meldingen inschakelen',
+    'test_webhook_channel' => 'Test Webhook kanaal',
 
     // Discord
-    'discord' => 'Discord',
-    'enable_discord_webhook_notifications' => 'Enable Discord Webhook Notifications',
+    'discord' => 'Onenigheid',
+    'enable_discord_webhook_notifications' => 'Discord Webhook meldingen inschakelen',
     'test_discord_webhook' => 'Test Discord Webhook',
 
     // Gotify
-    'gotify' => 'Gotify',
-    'gotify_enabled' => 'Enable Gotify Notifications',
+    'gotify' => 'Doelstelling',
+    'gotify_enabled' => 'Gotify meldingen inschakelen',
     'test_gotify_webhook' => 'Test Gotify Webhook',
 
     // Healthchecks.io
     'healthcheck_io' => 'Healthchecks.io',
-    'healthcheck_enabled' => 'Enable Healthchecks.io Notifications',
+    'healthcheck_enabled' => 'Inschakelen Healthchecks.io meldingen',
     'test_healthcheck_webhook' => 'Test Healthchecks.io Webhook',
 
     // Ntfy
-    'ntfy' => 'Ntfy',
-    'ntfy_enabled' => 'Enable Ntfy Notifications',
-    'test_ntfy_webhook' => 'Test Ntfy Webhook',
-    'your_ntfy_server_url' => 'Your Ntfy Server URL',
-    'your_ntfy_topic' => 'Your Ntfy Topic',
-    'topic' => 'Topic',
-    'username' => 'Username',
-    'username_placeholder' => 'Username (optional)',
-    'password' => 'Password',
-    'password_placeholder' => 'Password (optional)',
+    'ntfy' => 'N.B.',
+    'ntfy_enabled' => 'Ntfy meldingen inschakelen',
+    'test_ntfy_webhook' => 'Test Webhook',
+    'your_ntfy_server_url' => 'Uw Ntfy Server URL',
+    'your_ntfy_topic' => 'Uw Ntfy Onderwerp',
+    'topic' => 'Onderwerp',
+    'username' => 'Gebruikersnaam',
+    'username_placeholder' => 'Gebruikersnaam (optioneel)',
+    'password' => 'Wachtwoord',
+    'password_placeholder' => 'Wachtwoord (optioneel)',
 
     // Pushover
     'pushover' => 'Pushover',
     'pushover_webhooks' => 'Pushover Webhooks',
-    'enable_pushover_webhook_notifications' => 'Enable Pushover Notifications',
-    'test_pushover_webhook' => 'Test Pushover Webhook',
-    'your_pushover_api_token' => 'Your Pushover API Token',
-    'your_pushover_user_key' => 'Your Pushover User Key',
-    'user_key' => 'User Key',
+    'enable_pushover_webhook_notifications' => 'Pushover meldingen inschakelen',
+    'test_pushover_webhook' => 'Pushover Webhook testen',
+    'your_pushover_api_token' => 'Uw Pushover API Token',
+    'your_pushover_user_key' => 'Uw Pushover Gebruiker Sleutel',
+    'user_key' => 'Gebruiker Sleutel',
 
     // Slack
     'slack' => 'Slack',
-    'slack_enabled' => 'Enable Slack Notifications',
-    'test_slack_webhook' => 'Test Slack Webhook',
+    'slack_enabled' => 'Slack meldingen inschakelen',
+    'test_slack_webhook' => 'Slack Webhook testen',
 
     // Telegram
     'telegram' => 'Telegram',
-    'enable_telegram' => 'Enable Telegram Notifications',
-    'telegram_disable_notification' => 'Disable Notification',
-    'test_telegram_webhook' => 'Test Telegram',
+    'enable_telegram' => 'Telegram meldingen inschakelen',
+    'telegram_disable_notification' => 'Notificatie uitschakelen',
+    'test_telegram_webhook' => 'Telegram testen',
 
     // API Token
     'api_token' => 'API Token',
-    'options' => 'Options',
+    'options' => 'Instellingen',
 
     // Thresholds Settings
-    'thresholds' => 'Thresholds',
-    'threshold_helper_text' => 'Set thresholds for speedtest results. Leave empty to disable.',
-    'enable_absolute_thresholds' => 'Enable absolute thresholds',
-    'absolute_thresholds_description' => 'Absolute thresholds do not take into account previous history and could be triggered on each test.',
-    'download' => 'Download',
-    'upload' => 'Upload',
+    'thresholds' => 'Drempels',
+    'threshold_helper_text' => 'Stel drempelwaarden in voor snelheidste-resultaten. Laat leeg om uit te schakelen.',
+    'enable_absolute_thresholds' => 'Absolute drempels inschakelen',
+    'absolute_thresholds_description' => 'Absolute drempels houden geen rekening met de voorgeschiedenis en kunnen bij elke test in werking treden.',
+    'download' => 'downloaden',
+    'upload' => 'Uploaden',
     'ping' => 'Ping',
 
     // Data Integration
-    'export_current_results' => 'Export Current Results',
-    'test_connection' => 'Test Connection',
+    'export_current_results' => 'Exporteer huidige resultaten',
+    'test_connection' => 'Verbinding testen',
 
 ];
