@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\MetricsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,9 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', HomeController::class)
     ->middleware(['getting-started', 'public-dashboard'])
     ->name('home');
-
-Route::get('/metrics', MetricsController::class)
-    ->name('metrics');
 
 Route::view('/getting-started', 'getting-started')
     ->name('getting-started');

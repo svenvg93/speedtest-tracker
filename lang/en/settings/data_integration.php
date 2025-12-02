@@ -35,10 +35,7 @@ return [
     // Prometheus
     'prometheus' => 'Prometheus',
     'prometheus_enabled' => 'Enable',
-    'prometheus_basic_auth_enabled' => 'Use Basic Authentication',
-    'prometheus_basic_auth_credentials' => 'Basic Authentication Credentials',
-    'prometheus_basic_auth_username' => 'Username',
-    'prometheus_basic_auth_password' => 'Password',
+    'prometheus_enabled_helper_text' => 'Metrics for each new speedtest will be available at the /prometheus endpoint.',
 
     // Common labels
     'org' => 'Org',
