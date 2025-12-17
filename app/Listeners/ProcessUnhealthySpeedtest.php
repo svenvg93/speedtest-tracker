@@ -56,8 +56,11 @@ class ProcessUnhealthySpeedtest
             return;
         }
 
-        if (! count($this->notificationSettings->apprise_channel_urls)) {
-            Log::warning('Apprise channel URLs not found, check Apprise notification channel settings.');
+        $hasChannelUrls = count($this->notificationSettings->apprise_channel_urls) > 0;
+        $hasConfigKey = ! empty($this->notificationSettings->apprise_config_key);
+
+        if (! $hasChannelUrls && ! $hasConfigKey) {
+            Log::warning('Apprise channel URLs or config key not found, check Apprise notification channel settings.');
 
             return;
         }
@@ -100,17 +103,24 @@ class ProcessUnhealthySpeedtest
 
         $title = 'Speedtest Threshold Breach – #'.$result->id;
 
-        // Send notification to each configured channel URL
-        foreach ($this->notificationSettings->apprise_channel_urls as $row) {
-            $channelUrl = $row['channel_url'] ?? null;
-            if (! $channelUrl) {
-                Log::warning('Skipping entry with missing channel_url.');
-
-                continue;
-            }
-
-            Notification::route('apprise_urls', $channelUrl)
+        // Send notification using config-based routing if configured
+        if ($hasConfigKey) {
+            Notification::route('apprise_urls', null)
                 ->notify(new SpeedtestNotification($title, $body, 'warning', 'markdown'));
+        }
+
+        // Send notification to each configured channel URL if configured
+        if ($hasChannelUrls) {
+            foreach ($this->notificationSettings->apprise_channel_urls as $item) {
+                $channelUrl = is_array($item) ? ($item['channel_url'] ?? null) : $item;
+
+                if (empty($channelUrl)) {
+                    continue;
+                }
+
+                Notification::route('apprise_urls', $channelUrl)
+                    ->notify(new SpeedtestNotification($title, $body, 'warning', 'markdown'));
+            }
         }
     }
 

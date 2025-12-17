@@ -256,20 +256,22 @@ class Notification extends SettingsPage
                                         Tabs::make('apprise_method')
                                             ->columnSpanFull()
                                             ->schema([
-                                                Tab::make(__('settings/notifications.apprise_direct_urls'))
+                                                Tab::make(__('settings/notifications.apprise_channel_url'))
                                                     ->schema([
                                                         Repeater::make('apprise_channel_urls')
                                                             ->label(__('settings/notifications.apprise_channels'))
+                                                            ->helperText(__('settings/notifications.apprise_channel_url_helper'))
                                                             ->schema([
                                                                 TextInput::make('channel_url')
                                                                     ->label(__('settings/notifications.apprise_channel_url'))
-                                                                    ->placeholder('discord://WebhookID/WebhookToken')
-                                                                    ->helperText(__('settings/notifications.apprise_channel_url_helper'))
-                                                                    ->maxLength(2000)
-                                                                    ->distinct()
+                                                                    ->placeholder('discord://...')
                                                                     ->required()
-                                                                    ->rule(new AppriseScheme),
+                                                                    ->maxLength(2000)
+                                                                    ->rules([new AppriseScheme])
+                                                                    ->columnSpanFull(),
                                                             ])
+                                                            ->defaultItems(0)
+                                                            ->reorderable(false)
                                                             ->columnSpanFull(),
                                                     ]),
                                                 Tab::make(__('settings/notifications.apprise_config_tags'))
@@ -279,10 +281,12 @@ class Notification extends SettingsPage
                                                             ->placeholder('my-config')
                                                             ->helperText(__('settings/notifications.apprise_config_key_helper'))
                                                             ->maxLength(255)
+                                                            ->requiredWith('apprise_tags')
                                                             ->columnSpanFull(),
                                                         TagsInput::make('apprise_tags')
                                                             ->label(__('settings/notifications.apprise_tags'))
                                                             ->placeholder('Add tag and press Enter')
+                                                            ->requiredWith('apprise_config_key')
                                                             ->helperText(__('settings/notifications.apprise_tags_helper'))
                                                             ->splitKeys(['Enter', ',', 'Tab'])
                                                             ->nestedRecursiveRules(['string', 'max:100'])

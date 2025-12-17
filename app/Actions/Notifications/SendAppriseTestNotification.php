@@ -36,9 +36,10 @@ class SendAppriseTestNotification
 
         // If channel URLs are set, send test notifications to each
         if ($hasChannelUrls) {
-            foreach ($channel_urls as $row) {
-                $channelUrl = $row['channel_url'] ?? null;
-                if (! $channelUrl) {
+            foreach ($channel_urls as $item) {
+                $channelUrl = is_array($item) ? ($item['channel_url'] ?? null) : $item;
+
+                if (empty($channelUrl)) {
                     Notification::make()
                         ->title('Skipping missing channel URL!')
                         ->warning()
