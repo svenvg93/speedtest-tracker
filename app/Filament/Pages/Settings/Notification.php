@@ -19,6 +19,7 @@ use CodeWithDennis\SimpleAlert\Components\SimpleAlert;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\SettingsPage;
@@ -252,26 +253,49 @@ class Notification extends SettingsPage
                                                     ->label(__('settings/notifications.notify_on_threshold_failures'))
                                                     ->columnSpanFull(),
                                             ]),
-                                        Repeater::make('apprise_channel_urls')
-                                            ->label(__('settings/notifications.apprise_channels'))
+                                        Tabs::make('apprise_method')
+                                            ->columnSpanFull()
                                             ->schema([
-                                                TextInput::make('channel_url')
-                                                    ->label(__('settings/notifications.apprise_channel_url'))
-                                                    ->placeholder('discord://WebhookID/WebhookToken')
-                                                    ->helperText(__('settings/notifications.apprise_channel_url_helper'))
-                                                    ->maxLength(2000)
-                                                    ->distinct()
-                                                    ->required()
-                                                    ->rule(new AppriseScheme),
-                                            ])
-                                            ->columnSpanFull(),
+                                                Tab::make(__('settings/notifications.apprise_direct_urls'))
+                                                    ->schema([
+                                                        Repeater::make('apprise_channel_urls')
+                                                            ->label(__('settings/notifications.apprise_channels'))
+                                                            ->schema([
+                                                                TextInput::make('channel_url')
+                                                                    ->label(__('settings/notifications.apprise_channel_url'))
+                                                                    ->placeholder('discord://WebhookID/WebhookToken')
+                                                                    ->helperText(__('settings/notifications.apprise_channel_url_helper'))
+                                                                    ->maxLength(2000)
+                                                                    ->distinct()
+                                                                    ->required()
+                                                                    ->rule(new AppriseScheme),
+                                                            ])
+                                                            ->columnSpanFull(),
+                                                    ]),
+                                                Tab::make(__('settings/notifications.apprise_config_tags'))
+                                                    ->schema([
+                                                        TextInput::make('apprise_config_key')
+                                                            ->label(__('settings/notifications.apprise_config_key'))
+                                                            ->placeholder('my-config')
+                                                            ->helperText(__('settings/notifications.apprise_config_key_helper'))
+                                                            ->maxLength(255)
+                                                            ->columnSpanFull(),
+                                                        TagsInput::make('apprise_tags')
+                                                            ->label(__('settings/notifications.apprise_tags'))
+                                                            ->placeholder('Add tag and press Enter')
+                                                            ->helperText(__('settings/notifications.apprise_tags_helper'))
+                                                            ->splitKeys(['Enter', ',', 'Tab'])
+                                                            ->nestedRecursiveRules(['string', 'max:100'])
+                                                            ->columnSpanFull(),
+                                                    ]),
+                                            ]),
                                         Actions::make([
                                             Action::make('test apprise')
                                                 ->label(__('settings/notifications.test_apprise_channel'))
                                                 ->action(fn (Get $get) => SendAppriseTestNotification::run(
-                                                    channel_urls: $get('apprise_channel_urls'),
+                                                    channel_urls: $get('apprise_channel_urls') ?? [],
                                                 ))
-                                                ->hidden(fn (Get $get) => ! count($get('apprise_channel_urls'))),
+                                                ->hidden(fn (Get $get) => ! count($get('apprise_channel_urls') ?? []) && empty($get('apprise_config_key'))),
                                         ]),
                                     ]),
                             ]),

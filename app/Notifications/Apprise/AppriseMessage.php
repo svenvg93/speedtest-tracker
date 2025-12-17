@@ -5,24 +5,25 @@ namespace App\Notifications\Apprise;
 class AppriseMessage
 {
     public function __construct(
-        public string|array $urls,
+        public string|array|null $urls,
         public string $title,
         public string $body,
         public string $type = 'info',
         public string $format = 'text',
-        public ?string $tag = null,
+        public string|array|null $tag = null,
+        public string|array|null $tags = null,
     ) {}
 
     public static function create(): self
     {
         return new self(
-            urls: '',
+            urls: null,
             title: '',
             body: '',
         );
     }
 
-    public function urls(string|array $urls): self
+    public function urls(string|array|null $urls): self
     {
         $this->urls = $urls;
 
@@ -57,9 +58,16 @@ class AppriseMessage
         return $this;
     }
 
-    public function tag(string $tag): self
+    public function tag(string|array|null $tag): self
     {
         $this->tag = $tag;
+
+        return $this;
+    }
+
+    public function tags(string|array|null $tags): self
+    {
+        $this->tags = $tags;
 
         return $this;
     }
