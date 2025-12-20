@@ -24,7 +24,7 @@ class AppriseChannel
         }
 
         $settings = app(NotificationSettings::class);
-        $appriseUrl = $settings->apprise_server_url ?? '';
+        $appriseUrl = rtrim($settings->apprise_server_url ?? '', '/');
 
         if (empty($appriseUrl)) {
             Log::warning('Apprise notification skipped: No Server URL configured');
@@ -56,8 +56,8 @@ class AppriseChannel
             $tags = null;
 
             if ($isDirectUrl) {
-                // Direct URL mode: send to /notify with specific URLs
-                $endpoint = $appriseUrl.'/notify';
+                // Direct URL mode: send to configured Apprise URL with specific URLs
+                $endpoint = $appriseUrl;
                 $payload['urls'] = $message->urls;
 
                 // Include message-specific tags if provided, but NOT settings tags
@@ -66,8 +66,8 @@ class AppriseChannel
                     $payload['tag'] = $tags;
                 }
             } else {
-                // Config-based mode: send to /notify/{config_key} with tags
-                $endpoint = $appriseUrl.'/notify';
+                // Config-based mode: append config_key to Apprise URL with tags
+                $endpoint = $appriseUrl;
                 if (! empty($settings->apprise_config_key)) {
                     $endpoint .= '/'.trim($settings->apprise_config_key, '/');
                 }
