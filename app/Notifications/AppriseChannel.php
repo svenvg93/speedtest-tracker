@@ -3,9 +3,11 @@
 namespace App\Notifications;
 
 use App\Settings\NotificationSettings;
+use Exception;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class AppriseChannel
 {
@@ -22,7 +24,7 @@ class AppriseChannel
         }
 
         $settings = app(NotificationSettings::class);
-        $appriseUrl = rtrim($settings->apprise_server_url ?? '', '/');
+        $appriseUrl = $settings->apprise_server_url ?? '';
 
         if (empty($appriseUrl)) {
             Log::warning('Apprise notification skipped: No Server URL configured');
@@ -92,15 +94,17 @@ class AppriseChannel
                 $logContext['tags'] = $tags;
             }
 
-            if ($response->failed()) {
+            // Only accept 200 OK responses as successful
+            if ($response->status() !== 200) {
                 Log::error('Apprise notification failed', array_merge($logContext, [
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]));
-            } else {
-                Log::info('Apprise notification sent', $logContext);
+                throw new Exception('Apprise returned an error, please check Apprise logs for details');
             }
-        } catch (\Throwable $e) {
+
+            Log::info('Apprise notification sent', $logContext);
+        } catch (Throwable $e) {
             $logContext = [
                 'instance' => $endpoint ?? $appriseUrl,
                 'message' => $e->getMessage(),
@@ -116,6 +120,9 @@ class AppriseChannel
             }
 
             Log::error('Apprise notification exception', $logContext);
+
+            // Re-throw the exception so it can be handled by the queue
+            throw $e;
         }
     }
 }
