@@ -270,6 +270,7 @@ class Notification extends SettingsPage
                                                                     ->placeholder('discord://...')
                                                                     ->required()
                                                                     ->maxLength(2000)
+                                                                    ->distinct()
                                                                     ->rules([new AppriseScheme])
                                                                     ->columnSpanFull(),
                                                             ])
@@ -302,7 +303,11 @@ class Notification extends SettingsPage
                                                 ->action(fn (Get $get) => SendAppriseTestNotification::run(
                                                     channel_urls: $get('apprise_channel_urls') ?? [],
                                                 ))
-                                                ->hidden(fn (Get $get) => ! count($get('apprise_channel_urls') ?? []) && empty($get('apprise_config_key'))),
+                                                ->hidden(function () {
+                                                    $settings = app(NotificationSettings::class);
+
+                                                    return empty($settings->apprise_server_url) || (! count($settings->apprise_channel_urls ?? []) && empty($settings->apprise_config_key));
+                                                }),
                                         ]),
                                     ]),
                             ]),
