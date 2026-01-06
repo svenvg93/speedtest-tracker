@@ -35,19 +35,17 @@ class SendAppriseTestNotification
                 FacadesNotification::route('apprise_urls', $channelUrl)
                     ->notifyNow(new TestNotification);
             }
+
+            Notification::make()
+                ->title('Test Apprise notification sent successfully')
+                ->success()
+                ->send();
         } catch (Throwable $e) {
             Notification::make()
                 ->title('Failed to send Apprise test notification')
                 ->body($e->getMessage())
                 ->danger()
                 ->send();
-
-            return;
         }
-
-        Notification::make()
-            ->title('Test Apprise notification sent.')
-            ->success()
-            ->send();
     }
 }

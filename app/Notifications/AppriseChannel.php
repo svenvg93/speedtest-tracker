@@ -51,13 +51,16 @@ class AppriseChannel
             // Execute the apprise command
             $result = Process::timeout(30)->run($command);
 
+            // Combine stdout and stderr as apprise outputs to both
+            $fullOutput = trim($result->output()."\n".$result->errorOutput());
+
             if (! $result->successful()) {
-                throw new Exception('Apprise CLI failed: '.$result->errorOutput());
+                throw new Exception($fullOutput ?: 'Apprise CLI failed with no output');
             }
 
             Log::info('Apprise notification sent', [
                 'channels' => $urls,
-                'output' => $result->output(),
+                'output' => $fullOutput,
             ]);
         } catch (Throwable $e) {
             Log::error('Apprise notification failed', [
