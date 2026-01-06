@@ -14,7 +14,6 @@ use App\Actions\Notifications\SendSlackTestNotification;
 use App\Actions\Notifications\SendTelegramTestNotification;
 use App\Actions\Notifications\SendWebhookTestNotification;
 use App\Rules\AppriseScheme;
-use App\Rules\ContainsString;
 use App\Settings\NotificationSettings;
 use CodeWithDennis\SimpleAlert\Components\SimpleAlert;
 use Filament\Actions\Action;
@@ -230,22 +229,6 @@ class Notification extends SettingsPage
                                 ])
                                     ->hidden(fn (Get $get) => $get('apprise_enabled') !== true)
                                     ->schema([
-                                        Fieldset::make(__('settings/notifications.apprise_server'))
-                                            ->schema([
-                                                TextInput::make('apprise_server_url')
-                                                    ->label(__('settings/notifications.apprise_server_url'))
-                                                    ->placeholder('http://localhost:8000/notify')
-                                                    ->helperText(__('settings/notifications.apprise_server_url_helper'))
-                                                    ->maxLength(2000)
-                                                    ->required()
-                                                    ->url()
-                                                    ->rule(new ContainsString('/notify'))
-                                                    ->columnSpanFull(),
-                                                Checkbox::make('apprise_verify_ssl')
-                                                    ->label(__('settings/notifications.apprise_verify_ssl'))
-                                                    ->default(true)
-                                                    ->columnSpanFull(),
-                                            ]),
                                         Fieldset::make(__('settings.triggers'))
                                             ->schema([
                                                 Checkbox::make('apprise_on_speedtest_run')
@@ -278,7 +261,7 @@ class Notification extends SettingsPage
                                                 ->hidden(function () {
                                                     $settings = app(NotificationSettings::class);
 
-                                                    return empty($settings->apprise_server_url) || ! count($settings->apprise_channel_urls ?? []);
+                                                    return ! count($settings->apprise_channel_urls ?? []);
                                                 }),
                                         ]),
                                     ]),

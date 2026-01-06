@@ -2,11 +2,10 @@
 
 namespace App\Notifications;
 
-use App\Settings\NotificationSettings;
 use Exception;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Process;
 use Throwable;
 
 class AppriseChannel
@@ -23,48 +22,46 @@ class AppriseChannel
             return;
         }
 
-        $settings = app(NotificationSettings::class);
-        $appriseUrl = $settings->apprise_server_url ?? '';
+        // Get channel URLs - can be string or array
+        $urls = is_array($message->urls) ? $message->urls : [$message->urls];
 
-        if (empty($appriseUrl)) {
-            Log::warning('Apprise notification skipped: No Server URL configured');
+        if (empty($urls)) {
+            Log::warning('Apprise notification skipped: No channel URLs configured');
 
             return;
         }
 
         try {
-            $request = Http::timeout(30)
-                ->withHeaders([
-                    'Content-Type' => 'application/json',
-                ]);
+            // Build the apprise CLI command
+            $command = [
+                'apprise',
+                '-vv',
+                '-i markdown',
+                '-t', $message->title,
+                '-b', $message->body,
+            ];
 
-            // If SSL verification is disabled in settings, skip it
-            if (! $settings->apprise_verify_ssl) {
-                $request = $request->withoutVerifying();
+            // Add all channel URLs
+            foreach ($urls as $url) {
+                if (! empty($url)) {
+                    $command[] = $url;
+                }
             }
 
-            $response = $request->post($appriseUrl, [
-                'urls' => $message->urls,
-                'title' => $message->title,
-                'body' => $message->body,
-                'type' => $message->type ?? 'info',
-                'format' => $message->format ?? 'text',
-                'tag' => $message->tag ?? null,
-            ]);
+            // Execute the apprise command
+            $result = Process::timeout(30)->run($command);
 
-            // Only accept 200 OK responses as successful
-            if ($response->status() !== 200) {
-                throw new Exception('Apprise returned an error, please check Apprise logs for details');
+            if (! $result->successful()) {
+                throw new Exception('Apprise CLI failed: '.$result->errorOutput());
             }
 
             Log::info('Apprise notification sent', [
-                'channel' => $message->urls,
-                'instance' => $appriseUrl,
+                'channels' => $urls,
+                'output' => $result->output(),
             ]);
         } catch (Throwable $e) {
             Log::error('Apprise notification failed', [
-                'channel' => $message->urls ?? 'unknown',
-                'instance' => $appriseUrl,
+                'channels' => $urls ?? 'unknown',
                 'message' => $e->getMessage(),
                 'exception' => get_class($e),
             ]);
