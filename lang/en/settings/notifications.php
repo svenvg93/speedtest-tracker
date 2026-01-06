@@ -25,7 +25,7 @@ return [
     'apprise_tags' => 'Tags',
     'apprise_tags_helper' => 'Specify tags to route notifications to specific services in your persistent config. Add the config key to the server URL above (e.g., /notify/my-config).',
     'apprise_channels' => 'Notification Channels',
-    'apprise_channel_url' => 'Stateless URLs',
+    'apprise_channel_url' => 'Apprise URLs',
     'apprise_usage_helper' => 'Choose ONE method: Either add direct channel URLs (stateless) OR use tags with a persistent config (stateful). The fields are mutually exclusive.',
     'apprise_hint_description' => 'Apprise allows you to send notifications to 90+ services. You need to run an Apprise server and configure service URLs below.',
     'apprise_channel_url_helper' => 'Direct notification URLs in Apprise format (e.g., discord://WebhookID/Token, slack://TokenA/TokenB/TokenC). Cannot be used together with tags.',
