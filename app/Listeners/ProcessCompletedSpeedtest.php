@@ -57,10 +57,10 @@ class ProcessCompletedSpeedtest
         }
 
         $hasChannelUrls = count($this->notificationSettings->apprise_channel_urls) > 0;
-        $hasConfigKey = ! empty($this->notificationSettings->apprise_config_key);
+        $hasTags = ! empty($this->notificationSettings->apprise_tags);
 
-        if (! $hasChannelUrls && ! $hasConfigKey) {
-            Log::warning('Apprise channel URLs or config key not found, check Apprise notification channel settings.');
+        if (! $hasChannelUrls && ! $hasTags) {
+            Log::warning('Apprise channel URLs or tags not found, check Apprise notification channel settings.');
 
             return;
         }
@@ -82,14 +82,13 @@ class ProcessCompletedSpeedtest
 
         $title = 'Speedtest Completed – #'.$result->id;
 
-        // Send notification using config-based routing if configured
-        if ($hasConfigKey) {
+        // Use either tags OR channel URLs (mutually exclusive)
+        if ($hasTags) {
+            // Tag-based routing: send to server URL (may include config key) with tags
             Notification::route('apprise_urls', null)
                 ->notify(new SpeedtestNotification($title, $body, 'info', 'markdown'));
-        }
-
-        // Send notification to each configured channel URL if configured
-        if ($hasChannelUrls) {
+        } elseif ($hasChannelUrls) {
+            // Direct URL routing: send to each configured channel URL
             foreach ($this->notificationSettings->apprise_channel_urls as $item) {
                 $channelUrl = is_array($item) ? ($item['channel_url'] ?? null) : $item;
 

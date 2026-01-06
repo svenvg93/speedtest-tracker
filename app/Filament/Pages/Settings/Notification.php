@@ -235,12 +235,13 @@ class Notification extends SettingsPage
                                             ->schema([
                                                 TextInput::make('apprise_server_url')
                                                     ->label(__('settings/notifications.apprise_server_url'))
-                                                    ->placeholder('http://localhost:8000/notify')
+                                                    ->placeholder('http://localhost:8000/notify or http://localhost:8000/notify/my-config')
                                                     ->helperText(__('settings/notifications.apprise_server_url_helper'))
                                                     ->maxLength(2000)
                                                     ->required()
                                                     ->url()
-                                                    ->rule(new ContainsString('/notify'))
+                                                    ->rule(new ContainsString(['/notify', '/cfg']))
+                                                    ->live()
                                                     ->columnSpanFull(),
                                                 Checkbox::make('apprise_verify_ssl')
                                                     ->label(__('settings/notifications.apprise_verify_ssl'))
@@ -261,39 +262,46 @@ class Notification extends SettingsPage
                                             ->schema([
                                                 Tab::make(__('settings/notifications.apprise_channel_url'))
                                                     ->schema([
+                                                        SimpleAlert::make('apprise_save_reminder')
+                                                            ->description(__('settings/notifications.apprise_save_to_test'))
+                                                            ->border()
+                                                            ->info()
+                                                            ->columnSpanFull(),
                                                         Repeater::make('apprise_channel_urls')
                                                             ->label(__('settings/notifications.apprise_channels'))
-                                                            ->helperText(__('settings/notifications.apprise_channel_url_helper'))
                                                             ->schema([
                                                                 TextInput::make('channel_url')
                                                                     ->label(__('settings/notifications.apprise_channel_url'))
                                                                     ->placeholder('discord://...')
+                                                                    ->helperText(__('settings/notifications.apprise_channel_url_helper'))
                                                                     ->required()
                                                                     ->maxLength(2000)
                                                                     ->distinct()
                                                                     ->rules([new AppriseScheme])
                                                                     ->columnSpanFull(),
                                                             ])
+                                                            ->live()
+                                                            ->helperText(__('settings/notifications.apprise_usage_helper'))
+                                                            ->disabled(fn (Get $get) => ! empty($get('apprise_tags')))
                                                             ->defaultItems(0)
                                                             ->reorderable(false)
                                                             ->columnSpanFull(),
                                                     ]),
-                                                Tab::make(__('settings/notifications.apprise_config_tags'))
+                                                Tab::make(__('settings/notifications.apprise_tags'))
                                                     ->schema([
-                                                        TextInput::make('apprise_config_key')
-                                                            ->label(__('settings/notifications.apprise_config_key'))
-                                                            ->placeholder('my-config')
-                                                            ->helperText(__('settings/notifications.apprise_config_key_helper'))
-                                                            ->maxLength(255)
-                                                            ->requiredWith('apprise_tags')
+                                                        SimpleAlert::make('apprise_save_reminder')
+                                                            ->description(__('settings/notifications.apprise_save_to_test'))
+                                                            ->border()
+                                                            ->info()
                                                             ->columnSpanFull(),
                                                         TagsInput::make('apprise_tags')
                                                             ->label(__('settings/notifications.apprise_tags'))
                                                             ->placeholder('Add tag and press Enter')
-                                                            ->requiredWith('apprise_config_key')
                                                             ->helperText(__('settings/notifications.apprise_tags_helper'))
                                                             ->splitKeys(['Enter', ',', 'Tab'])
                                                             ->nestedRecursiveRules(['string', 'max:100'])
+                                                            ->live()
+                                                            ->disabled(fn (Get $get) => count($get('apprise_channel_urls') ?? []) > 0)
                                                             ->columnSpanFull(),
                                                     ]),
                                             ]),
@@ -306,7 +314,16 @@ class Notification extends SettingsPage
                                                 ->hidden(function () {
                                                     $settings = app(NotificationSettings::class);
 
-                                                    return empty($settings->apprise_server_url) || (! count($settings->apprise_channel_urls ?? []) && empty($settings->apprise_config_key));
+                                                    // Hide if no server URL is saved
+                                                    if (empty($settings->apprise_server_url)) {
+                                                        return true;
+                                                    }
+
+                                                    // Show if either channel URLs OR tags are configured (from saved settings)
+                                                    $hasChannelUrls = count($settings->apprise_channel_urls ?? []) > 0;
+                                                    $hasTags = ! empty($settings->apprise_tags);
+
+                                                    return ! $hasChannelUrls && ! $hasTags;
                                                 }),
                                         ]),
                                     ]),

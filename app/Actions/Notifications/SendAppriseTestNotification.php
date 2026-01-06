@@ -17,7 +17,7 @@ class SendAppriseTestNotification
     {
         $settings = app(NotificationSettings::class);
         $hasChannelUrls = count($channel_urls) > 0;
-        $hasConfigKey = ! empty($settings->apprise_config_key);
+        $hasTags = ! empty($settings->apprise_tags);
         $appriseUrl = rtrim($settings->apprise_server_url ?? '', '/');
 
         // Check if Apprise Server URL is configured
@@ -31,10 +31,10 @@ class SendAppriseTestNotification
             return;
         }
 
-        // Check if we have at least one method configured
-        if (! $hasChannelUrls && ! $hasConfigKey) {
+        // Check if we have at least one method configured (mutually exclusive)
+        if (! $hasChannelUrls && ! $hasTags) {
             Notification::make()
-                ->title('You need to add Apprise channel URLs or configure a config key with tags!')
+                ->title('You need to add Apprise channel URLs or tags!')
                 ->warning()
                 ->send();
 
@@ -42,14 +42,13 @@ class SendAppriseTestNotification
         }
 
         try {
-            // If config key is set, send a test notification using config-based routing
-            if ($hasConfigKey) {
+            // Use either tags OR channel URLs (mutually exclusive)
+            if ($hasTags) {
+                // Tag-based routing: send to server URL (may include config key) with tags
                 FacadesNotification::route('apprise_urls', null)
                     ->notifyNow(new TestNotification);
-            }
-
-            // If channel URLs are set, send test notifications to each
-            if ($hasChannelUrls) {
+            } elseif ($hasChannelUrls) {
+                // Direct URL routing: send test notifications to each configured channel URL
                 foreach ($channel_urls as $item) {
                     $channelUrl = is_array($item) ? ($item['channel_url'] ?? null) : $item;
 

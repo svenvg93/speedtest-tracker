@@ -98,8 +98,6 @@ class NotificationSettings extends Settings
 
     public ?array $apprise_channel_urls;
 
-    public ?string $apprise_config_key;
-
     public ?array $apprise_tags;
 
     public static function group(): string

@@ -51,7 +51,7 @@ class AppriseChannel
                 'format' => $message->format ?? 'text',
             ];
 
-            // Determine if this is a direct URL notification or config-based notification
+            // Determine if this is a direct URL notification or tag-based notification
             $isDirectUrl = ! empty($message->urls);
             $tags = null;
 
@@ -66,11 +66,8 @@ class AppriseChannel
                     $payload['tag'] = $tags;
                 }
             } else {
-                // Config-based mode: append config_key to Apprise URL with tags
+                // Tag-based mode: use the server URL as-is (may include config key) with tags
                 $endpoint = $appriseUrl;
-                if (! empty($settings->apprise_config_key)) {
-                    $endpoint .= '/'.trim($settings->apprise_config_key, '/');
-                }
 
                 // Add tags - priority: message tags > message tag > settings tags
                 $tags = $message->tags ?? $message->tag ?? $settings->apprise_tags ?? null;
