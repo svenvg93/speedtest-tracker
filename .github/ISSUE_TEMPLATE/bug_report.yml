@@ -17,7 +17,9 @@ body:
         - We only support installations that follow the methods described in the documentation. Installations using third-party or undocumented methods are not supported by the project.
 
       options:
-      - label: I have read the [documentation](https://docs.speedtest-tracker.dev) and my problem was not listed in the help section.
+      - label: I have read the [Help Section](https://docs.speedtest-tracker.dev/help/error-messages) and my problem was not listed
+        required: true
+      - label: I have followed the [Installation Guide](https://docs.speedtest-tracker.dev/getting-started/installation).
         required: true
       - label: I have searched open and closed issues and my problem was not mentioned before.
         required: true
@@ -87,12 +89,6 @@ body:
       label: What is your environment & configuration?
       description: Please add your docker compose file or docker run command used to deploy the application.
       placeholder: Add information here.
-      value: |
-        ```yaml
-        # (paste your configuration here)
-        ```
-
-        Add more configuration information here.
     validations:
       required: true
 
@@ -100,7 +96,7 @@ body:
     id: application-information
     attributes:
       label: Application Information
-      description: To generate application information run `php artisan about --json` from the application's path. This will be automatically formatted into code, so no need for backticks.
+      description: To generate application information run `docker exec <container_id/name> php artisan about --json`. This will be automatically formatted into code, so no need for backticks.
       render: json
     validations:
       required: true
@@ -117,7 +113,8 @@ body:
     id: logs
     attributes:
       label: Logs
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks. If you are unsure which logs to include, include all logs. You can get the logs by running `docker logs <container_id/name>`.
+      description: Please copy and paste any relevant log output. Enable [debug logging](https://docs.speedtest-tracker.dev/help/error-messages#enable-debugging) to collect more detailed logs.
+        If you are unsure which logs to include, include all logs. You can get the logs by running `docker logs <container_id/name>`. This will be automatically formatted into code, so no need for backticks. 
       render: shell
     validations:
       required: true
