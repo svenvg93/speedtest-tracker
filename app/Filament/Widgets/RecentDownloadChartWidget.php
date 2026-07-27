@@ -3,15 +3,15 @@
 namespace App\Filament\Widgets;
 
 use App\Enums\ResultStatus;
-use App\Filament\Widgets\Concerns\HasChartFilters;
 use App\Helpers\Average;
 use App\Helpers\Number;
 use App\Models\Result;
 use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class RecentDownloadChartWidget extends ChartWidget
 {
-    use HasChartFilters;
+    use InteractsWithPageFilters;
 
     protected ?string $heading = null;
 
@@ -26,27 +26,13 @@ class RecentDownloadChartWidget extends ChartWidget
 
     protected ?string $pollingInterval = '60s';
 
-    public ?string $filter = null;
-
-    public function mount(): void
-    {
-        $this->filter = $this->filter ?? config('speedtest.default_chart_range', '24h');
-    }
-
     protected function getData(): array
     {
         $results = Result::query()
             ->select(['id', 'download', 'created_at'])
             ->where('status', '=', ResultStatus::Completed)
-            ->when($this->filter === '24h', function ($query) {
-                $query->where('created_at', '>=', now()->subDay());
-            })
-            ->when($this->filter === 'week', function ($query) {
-                $query->where('created_at', '>=', now()->subWeek());
-            })
-            ->when($this->filter === 'month', function ($query) {
-                $query->where('created_at', '>=', now()->subMonth());
-            })
+            ->when($this->pageFilters['startDate'] ?? null, fn ($query, $startDate) => $query->where('created_at', '>=', $startDate))
+            ->when($this->pageFilters['endDate'] ?? null, fn ($query, $endDate) => $query->where('created_at', '<=', $endDate))
             ->orderBy('created_at')
             ->get();
 

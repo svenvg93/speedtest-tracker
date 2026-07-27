@@ -54,9 +54,9 @@ class StatsOverviewWidget extends BaseWidget
             ];
         }
 
-        $downloadChange = percentChange($this->result->download, $previous->download, 2);
-        $uploadChange = percentChange($this->result->upload, $previous->upload, 2);
-        $pingChange = percentChange($this->result->ping, $previous->ping, 2);
+        $downloadChange = Number::percentChange($this->result->download, $previous->download, 2);
+        $uploadChange = Number::percentChange($this->result->upload, $previous->upload, 2);
+        $pingChange = Number::percentChange($this->result->ping, $previous->ping, 2);
 
         return [
             Stat::make('Latest download', fn (): string => ! blank($this->result) ? Number::toBitRate(bits: $this->result->download_bits, precision: 2) : 'n/a')

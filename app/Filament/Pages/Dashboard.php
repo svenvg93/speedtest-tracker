@@ -9,13 +9,23 @@ use App\Filament\Widgets\RecentPingChartWidget;
 use App\Filament\Widgets\RecentUploadChartWidget;
 use App\Filament\Widgets\RecentUploadLatencyChartWidget;
 use App\Filament\Widgets\StatsOverviewWidget;
+use App\Forms\Components\DateFilterForm;
 use Carbon\Carbon;
 use Cron\CronExpression;
 use Filament\Pages\Dashboard as BasePage;
+use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
+use Filament\Schemas\Schema;
 
 class Dashboard extends BasePage
 {
+    use HasFiltersForm;
+
     protected static string|\BackedEnum|null $navigationIcon = 'tabler-layout-dashboard';
+
+    public function persistsFiltersInSession(): bool
+    {
+        return false;
+    }
 
     public function getTitle(): string
     {
@@ -42,16 +52,27 @@ class Dashboard extends BasePage
         return __('dashboard.next_speedtest_at').': '.$nextRunDate;
     }
 
+    public function filtersForm(Schema $schema): Schema
+    {
+        return DateFilterForm::make($schema);
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            StatsOverviewWidget::make(),
+        ];
+    }
+
     public function getWidgets(): array
     {
         return [
-            StatsOverviewWidget::class,
-            RecentDownloadChartWidget::class,
-            RecentUploadChartWidget::class,
-            RecentPingChartWidget::class,
-            RecentJitterChartWidget::class,
-            RecentDownloadLatencyChartWidget::class,
-            RecentUploadLatencyChartWidget::class,
+            RecentDownloadChartWidget::make(),
+            RecentUploadChartWidget::make(),
+            RecentPingChartWidget::make(),
+            RecentJitterChartWidget::make(),
+            RecentDownloadLatencyChartWidget::make(),
+            RecentUploadLatencyChartWidget::make(),
         ];
     }
 }
