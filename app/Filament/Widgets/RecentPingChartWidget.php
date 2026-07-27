@@ -17,7 +17,7 @@ class RecentPingChartWidget extends ChartWidget
 
     public function getHeading(): ?string
     {
-        return __('general.ping_ms');
+        return __('general.ping');
     }
 
     public function getDescription(): ?string
@@ -82,6 +82,10 @@ class RecentPingChartWidget extends ChartWidget
                 'y' => [
                     'beginAtZero' => app(GeneralSettings::class)->chart_begin_at_zero,
                     'grace' => 2,
+                    'title' => [
+                        'display' => true,
+                        'text' => __('general.ms'),
+                    ],
                 ],
             ],
         ];

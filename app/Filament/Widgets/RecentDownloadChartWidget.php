@@ -18,7 +18,7 @@ class RecentDownloadChartWidget extends ChartWidget
 
     public function getHeading(): ?string
     {
-        return __('general.download_mbps');
+        return __('general.download');
     }
 
     public function getDescription(): ?string
@@ -84,6 +84,10 @@ class RecentDownloadChartWidget extends ChartWidget
                 'y' => [
                     'beginAtZero' => app(GeneralSettings::class)->chart_begin_at_zero,
                     'grace' => 2,
+                    'title' => [
+                        'display' => true,
+                        'text' => __('general.mbps'),
+                    ],
                 ],
             ],
         ];

@@ -89,6 +89,10 @@ class RecentJitterChartWidget extends ChartWidget
             'scales' => [
                 'y' => [
                     'beginAtZero' => app(GeneralSettings::class)->chart_begin_at_zero,
+                    'title' => [
+                        'display' => true,
+                        'text' => __('general.ms'),
+                    ],
                 ],
             ],
         ];
