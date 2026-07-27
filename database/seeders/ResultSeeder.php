@@ -60,8 +60,10 @@ class ResultSeeder extends Seeder
         $now = CarbonImmutable::now();
         $rows = [];
 
-        for ($timestamp = $now->subMonths(2); $timestamp->lessThanOrEqualTo($now); $timestamp = $timestamp->addHours(3)) {
-            foreach ($this->servers as $server) {
+        for ($tick = $now->subMonths(2); $tick->lessThanOrEqualTo($now); $tick = $tick->addHours(3)) {
+            foreach ($this->servers as $index => $server) {
+                $timestamp = $tick->addMinutes($index * 2);
+
                 $rows[] = fake()->boolean(8)
                     ? $this->failedResult($server, $timestamp)
                     : $this->completedResult($server, $timestamp);
@@ -84,9 +86,9 @@ class ResultSeeder extends Seeder
      */
     private function completedResult(array $server, CarbonImmutable $timestamp): array
     {
-        $downloadMbps = max(1, $server['download_mbps'] + fake()->randomFloat(2, -$server['download_mbps'] * 0.15, $server['download_mbps'] * 0.15));
-        $uploadMbps = max(1, $server['upload_mbps'] + fake()->randomFloat(2, -$server['upload_mbps'] * 0.15, $server['upload_mbps'] * 0.15));
-        $ping = max(1, $server['ping_ms'] + fake()->randomFloat(3, -$server['ping_ms'] * 0.2, $server['ping_ms'] * 0.2));
+        $downloadMbps = max(1, $server['download_mbps'] + fake()->randomFloat(2, -$server['download_mbps'] * 0.05, $server['download_mbps'] * 0.05));
+        $uploadMbps = max(1, $server['upload_mbps'] + fake()->randomFloat(2, -$server['upload_mbps'] * 0.05, $server['upload_mbps'] * 0.05));
+        $ping = max(1, $server['ping_ms'] + fake()->randomFloat(3, -$server['ping_ms'] * 0.05, $server['ping_ms'] * 0.05));
 
         $downloadBandwidth = (int) round($downloadMbps * 125000);
         $uploadBandwidth = (int) round($uploadMbps * 125000);

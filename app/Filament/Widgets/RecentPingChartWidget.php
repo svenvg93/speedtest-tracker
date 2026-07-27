@@ -13,6 +13,8 @@ class RecentPingChartWidget extends ChartWidget
 {
     use InteractsWithPageFilters;
 
+    protected static bool $isLazy = false;
+
     protected ?string $heading = null;
 
     public function getHeading(): ?string
@@ -49,8 +51,8 @@ class RecentPingChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => __('general.ping'),
-                    'data' => $results->map(fn ($item) => $item->ping),
+                    'label' => __('general.ping_ms'),
+                    'data' => $results->map(fn ($item) => ! blank($item->ping) ? round($item->ping, 2) : null),
                     'borderColor' => 'rgba(16, 185, 129)',
                     'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
                     'pointBackgroundColor' => 'rgba(16, 185, 129)',
@@ -82,10 +84,6 @@ class RecentPingChartWidget extends ChartWidget
                 'y' => [
                     'beginAtZero' => app(GeneralSettings::class)->chart_begin_at_zero,
                     'grace' => 2,
-                    'title' => [
-                        'display' => true,
-                        'text' => __('general.ms'),
-                    ],
                 ],
             ],
         ];

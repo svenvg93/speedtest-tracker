@@ -14,6 +14,8 @@ class RecentUploadChartWidget extends ChartWidget
 {
     use InteractsWithPageFilters;
 
+    protected static bool $isLazy = false;
+
     protected ?string $heading = null;
 
     public function getHeading(): ?string
@@ -50,7 +52,7 @@ class RecentUploadChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => __('general.upload'),
+                    'label' => __('general.upload_mbps'),
                     'data' => $results->map(fn ($item) => ! blank($item->upload) ? Number::bitsToMagnitude(bits: $item->upload_bits, precision: 2, magnitude: 'mbit') : null),
                     'borderColor' => 'rgba(139, 92, 246)',
                     'backgroundColor' => 'rgba(139, 92, 246, 0.1)',
@@ -83,10 +85,6 @@ class RecentUploadChartWidget extends ChartWidget
                 'y' => [
                     'beginAtZero' => app(GeneralSettings::class)->chart_begin_at_zero,
                     'grace' => 2,
-                    'title' => [
-                        'display' => true,
-                        'text' => __('general.mbps'),
-                    ],
                 ],
             ],
         ];

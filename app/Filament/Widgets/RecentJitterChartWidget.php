@@ -11,6 +11,8 @@ class RecentJitterChartWidget extends ChartWidget
 {
     use InteractsWithPageFilters;
 
+    protected static bool $isLazy = false;
+
     protected ?string $heading = null;
 
     public function getHeading(): ?string
@@ -36,7 +38,7 @@ class RecentJitterChartWidget extends ChartWidget
             'datasets' => [
                 [
                     'label' => __('general.download_ms'),
-                    'data' => $results->map(fn ($item) => $item->download_jitter),
+                    'data' => $results->map(fn ($item) => ! blank($item->download_jitter) ? round($item->download_jitter, 2) : null),
                     'borderColor' => 'rgba(14, 165, 233)',
                     'backgroundColor' => 'rgba(14, 165, 233, 0.1)',
                     'pointBackgroundColor' => 'rgba(14, 165, 233)',
@@ -47,7 +49,7 @@ class RecentJitterChartWidget extends ChartWidget
                 ],
                 [
                     'label' => __('general.upload_ms'),
-                    'data' => $results->map(fn ($item) => $item->upload_jitter),
+                    'data' => $results->map(fn ($item) => ! blank($item->upload_jitter) ? round($item->upload_jitter, 2) : null),
                     'borderColor' => 'rgba(139, 92, 246)',
                     'backgroundColor' => 'rgba(139, 92, 246, 0.1)',
                     'pointBackgroundColor' => 'rgba(139, 92, 246)',
@@ -58,7 +60,7 @@ class RecentJitterChartWidget extends ChartWidget
                 ],
                 [
                     'label' => __('general.ping_ms_label'),
-                    'data' => $results->map(fn ($item) => $item->ping_jitter),
+                    'data' => $results->map(fn ($item) => ! blank($item->ping_jitter) ? round($item->ping_jitter, 2) : null),
                     'borderColor' => 'rgba(16, 185, 129)',
                     'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
                     'pointBackgroundColor' => 'rgba(16, 185, 129)',
@@ -89,10 +91,6 @@ class RecentJitterChartWidget extends ChartWidget
             'scales' => [
                 'y' => [
                     'beginAtZero' => app(GeneralSettings::class)->chart_begin_at_zero,
-                    'title' => [
-                        'display' => true,
-                        'text' => __('general.ms'),
-                    ],
                 ],
             ],
         ];

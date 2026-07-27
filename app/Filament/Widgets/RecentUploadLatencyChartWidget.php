@@ -11,6 +11,8 @@ class RecentUploadLatencyChartWidget extends ChartWidget
 {
     use InteractsWithPageFilters;
 
+    protected static bool $isLazy = false;
+
     protected ?string $heading = null;
 
     public function getHeading(): ?string
@@ -36,7 +38,7 @@ class RecentUploadLatencyChartWidget extends ChartWidget
             'datasets' => [
                 [
                     'label' => __('general.average_ms'),
-                    'data' => $results->map(fn ($item) => $item->upload_latency_iqm),
+                    'data' => $results->map(fn ($item) => ! blank($item->upload_latency_iqm) ? round($item->upload_latency_iqm, 2) : null),
                     'borderColor' => 'rgba(16, 185, 129)',
                     'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
                     'pointBackgroundColor' => 'rgba(16, 185, 129)',
@@ -47,7 +49,7 @@ class RecentUploadLatencyChartWidget extends ChartWidget
                 ],
                 [
                     'label' => __('general.high_ms'),
-                    'data' => $results->map(fn ($item) => $item->upload_latency_high),
+                    'data' => $results->map(fn ($item) => ! blank($item->upload_latency_high) ? round($item->upload_latency_high, 2) : null),
                     'borderColor' => 'rgba(14, 165, 233)',
                     'backgroundColor' => 'rgba(14, 165, 233, 0.1)',
                     'pointBackgroundColor' => 'rgba(14, 165, 233)',
@@ -58,7 +60,7 @@ class RecentUploadLatencyChartWidget extends ChartWidget
                 ],
                 [
                     'label' => __('general.low_ms'),
-                    'data' => $results->map(fn ($item) => $item->upload_latency_low),
+                    'data' => $results->map(fn ($item) => ! blank($item->upload_latency_low) ? round($item->upload_latency_low, 2) : null),
                     'borderColor' => 'rgba(139, 92, 246)',
                     'backgroundColor' => 'rgba(139, 92, 246, 0.1)',
                     'pointBackgroundColor' => 'rgba(139, 92, 246)',
@@ -90,10 +92,6 @@ class RecentUploadLatencyChartWidget extends ChartWidget
                 'y' => [
                     'beginAtZero' => app(GeneralSettings::class)->chart_begin_at_zero,
                     'grace' => 2,
-                    'title' => [
-                        'display' => true,
-                        'text' => __('general.ms'),
-                    ],
                 ],
             ],
         ];

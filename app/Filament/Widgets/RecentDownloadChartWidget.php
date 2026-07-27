@@ -14,6 +14,8 @@ class RecentDownloadChartWidget extends ChartWidget
 {
     use InteractsWithPageFilters;
 
+    protected static bool $isLazy = false;
+
     protected ?string $heading = null;
 
     public function getHeading(): ?string
@@ -50,7 +52,7 @@ class RecentDownloadChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => __('general.download'),
+                    'label' => __('general.download_mbps'),
                     'data' => $results->map(fn ($item) => ! blank($item->download) ? Number::bitsToMagnitude(bits: $item->download_bits, precision: 2, magnitude: 'mbit') : null),
                     'borderColor' => 'rgba(14, 165, 233)',
                     'backgroundColor' => 'rgba(14, 165, 233, 0.1)',
@@ -84,10 +86,6 @@ class RecentDownloadChartWidget extends ChartWidget
                 'y' => [
                     'beginAtZero' => app(GeneralSettings::class)->chart_begin_at_zero,
                     'grace' => 2,
-                    'title' => [
-                        'display' => true,
-                        'text' => __('general.mbps'),
-                    ],
                 ],
             ],
         ];
