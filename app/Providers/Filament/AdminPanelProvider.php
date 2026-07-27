@@ -2,10 +2,12 @@
 
 namespace App\Providers\Filament;
 
+use App\Services\GitHub\Repository;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -57,8 +59,25 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 NavigationGroup::make()
-                    ->label(__('general.settings'))
+                    ->label('Settings'),
+                NavigationGroup::make()
+                    ->label('Links')
                     ->collapsible(false),
+            ])
+            ->navigationItems([
+                NavigationItem::make(__('general.documentation'))
+                    ->url('https://docs.speedtest-tracker.dev?utm_source=app&utm_medium=dashboard&utm_campaign=view_documentation', shouldOpenInNewTab: true)
+                    ->icon('tabler-book')
+                    ->group(__('general.links')),
+                NavigationItem::make(__('general.donate'))
+                    ->url('https://github.com/sponsors/alexjustesen?utm_source=app&utm_medium=dashboard&utm_campaign=donate', shouldOpenInNewTab: true)
+                    ->icon('tabler-cash-banknote-heart')
+                    ->group(__('general.links')),
+                NavigationItem::make(__('general.github'))
+                    ->url('https://github.com/alexjustesen/speedtest-tracker?utm_source=app&utm_medium=dashboard&utm_campaign=github', shouldOpenInNewTab: true)
+                    ->icon('tabler-brand-github')
+                    ->badge(fn (): ?string => Repository::updateAvailable() ? __('general.update_available') : null)
+                    ->group(__('general.links')),
             ]);
     }
 }

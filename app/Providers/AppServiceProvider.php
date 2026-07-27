@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/';
+    public const HOME = '/admin';
 
     /**
      * Bootstrap any application services.
@@ -87,18 +87,6 @@ class AppServiceProvider extends ServiceProvider
     protected function defineGates(): void
     {
         Gate::define('access-admin-panel', function (User $user) {
-            return in_array($user->role, [UserRole::Admin, UserRole::User]);
-        });
-
-        Gate::define('view-dashboard', function (?User $user) {
-            if (config('speedtest.public_dashboard')) {
-                return true;
-            }
-
-            if ($user === null) {
-                return false;
-            }
-
             return in_array($user->role, [UserRole::Admin, UserRole::User]);
         });
     }

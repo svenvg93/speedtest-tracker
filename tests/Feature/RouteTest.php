@@ -18,28 +18,6 @@ describe('auth', function () {
 });
 
 describe('page', function () {
-    test('can render "home" route', function () {
-        config()->set('speedtest.public_dashboard', true);
-
-        Result::factory()->create();
-
-        $response = $this->get('/');
-
-        $response->assertStatus(200)
-            ->assertSee('Dashboard');
-    });
-
-    test('renders the notifications component on the "home" route', function () {
-        config()->set('speedtest.public_dashboard', true);
-
-        Result::factory()->create();
-
-        $response = $this->get('/');
-
-        $response->assertStatus(200)
-            ->assertSeeLivewire('notifications');
-    });
-
     test('can render "getting-started" route', function () {
         $response = $this->get('/getting-started');
 
@@ -64,14 +42,12 @@ describe('redirects', function () {
             ->assertStatus(302);
     });
 
-    test('redirect "home" to login page when public dashboard is disabled', function () {
-        config()->set('speedtest.public_dashboard', false);
-
+    test('redirect "home" route to "admin" when there are results', function () {
         Result::factory()->create();
 
         $response = $this->get('/');
 
-        $response->assertRedirect('/admin/login')
+        $response->assertRedirect('/admin')
             ->assertStatus(302);
     });
 

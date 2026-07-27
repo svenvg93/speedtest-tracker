@@ -16,7 +16,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'getting-started' => App\Http\Middleware\GettingStarted::class,
-            'public-dashboard' => App\Http\Middleware\PublicDashboard::class,
             'accept-json' => App\Http\Middleware\AcceptJsonMiddleware::class,
         ]);
 

@@ -14,8 +14,6 @@ return [
 
     'prune_results_older_than' => (int) env('PRUNE_RESULTS_OLDER_THAN', 0),
 
-    'public_dashboard' => env('PUBLIC_DASHBOARD', false),
-
     'default_chart_range' => strtolower(env('DEFAULT_CHART_RANGE', '24h')),
 
     /**

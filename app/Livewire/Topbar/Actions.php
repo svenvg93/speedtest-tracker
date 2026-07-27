@@ -21,20 +21,6 @@ class Actions extends Component implements HasActions, HasForms
 {
     use InteractsWithActions, InteractsWithForms;
 
-    public bool $showDashboard = true;
-
-    public function dashboardAction(): Action
-    {
-        return Action::make('metrics')
-            ->iconButton()
-            ->icon('tabler-chart-histogram')
-            ->color('gray')
-            ->url(url: route('home'))
-            ->extraAttributes([
-                'id' => 'dashboardAction',
-            ]);
-    }
-
     public function speedtestAction(): Action
     {
         return Action::make('speedtest')
