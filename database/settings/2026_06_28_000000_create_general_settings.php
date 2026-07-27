@@ -8,5 +8,6 @@ return new class extends SettingsMigration
     {
         $this->migrator->add('general.default_chart_range', '24h');
         $this->migrator->add('general.chart_begin_at_zero', config('app.chart_begin_at_zero'));
+        $this->migrator->add('general.chart_datetime_format', config('app.chart_datetime_format'));
     }
 };

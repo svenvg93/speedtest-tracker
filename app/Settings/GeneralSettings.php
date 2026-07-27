@@ -10,6 +10,8 @@ class GeneralSettings extends Settings
 
     public bool $chart_begin_at_zero;
 
+    public string $chart_datetime_format;
+
     public static function group(): string
     {
         return 'general';

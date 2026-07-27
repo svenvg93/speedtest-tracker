@@ -68,7 +68,7 @@ class RecentUploadLatencyChartWidget extends ChartWidget
                     'pointRadius' => count($results) <= 24 ? 3 : 0,
                 ],
             ],
-            'labels' => $results->map(fn ($item) => $item->created_at->timezone(config('app.display_timezone'))->format(config('app.chart_datetime_format'))),
+            'labels' => $results->map(fn ($item) => $item->created_at->timezone(config('app.display_timezone'))->format(app(GeneralSettings::class)->chart_datetime_format)),
         ];
     }
 
