@@ -2,8 +2,8 @@
 
 namespace App\Filament\Widgets;
 
-use App\Enums\ResultStatus;
 use App\Models\Result;
+use App\Settings\GeneralSettings;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
@@ -28,9 +28,7 @@ class RecentJitterChartWidget extends ChartWidget
     {
         $results = Result::query()
             ->select(['id', 'data', 'created_at'])
-            ->where('status', '=', ResultStatus::Completed)
-            ->when($this->pageFilters['startDate'] ?? null, fn ($query, $startDate) => $query->where('created_at', '>=', $startDate))
-            ->when($this->pageFilters['endDate'] ?? null, fn ($query, $endDate) => $query->where('created_at', '<=', $endDate))
+            ->whereBetween('created_at', [$this->pageFilters['startDate'], $this->pageFilters['endDate']])
             ->orderBy('created_at')
             ->get();
 
@@ -90,7 +88,7 @@ class RecentJitterChartWidget extends ChartWidget
             ],
             'scales' => [
                 'y' => [
-                    'beginAtZero' => config('app.chart_begin_at_zero'),
+                    'beginAtZero' => app(GeneralSettings::class)->chart_begin_at_zero,
                 ],
             ],
         ];

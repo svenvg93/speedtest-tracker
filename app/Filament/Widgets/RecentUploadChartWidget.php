@@ -2,10 +2,10 @@
 
 namespace App\Filament\Widgets;
 
-use App\Enums\ResultStatus;
 use App\Helpers\Average;
 use App\Helpers\Number;
 use App\Models\Result;
+use App\Settings\GeneralSettings;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Database\Eloquent\Collection;
@@ -38,9 +38,7 @@ class RecentUploadChartWidget extends ChartWidget
     {
         return $this->results ??= Result::query()
             ->select(['id', 'upload', 'created_at'])
-            ->where('status', '=', ResultStatus::Completed)
-            ->when($this->pageFilters['startDate'] ?? null, fn ($query, $startDate) => $query->where('created_at', '>=', $startDate))
-            ->when($this->pageFilters['endDate'] ?? null, fn ($query, $endDate) => $query->where('created_at', '<=', $endDate))
+            ->whereBetween('created_at', [$this->pageFilters['startDate'], $this->pageFilters['endDate']])
             ->orderBy('created_at')
             ->get();
     }
@@ -83,7 +81,7 @@ class RecentUploadChartWidget extends ChartWidget
             ],
             'scales' => [
                 'y' => [
-                    'beginAtZero' => config('app.chart_begin_at_zero'),
+                    'beginAtZero' => app(GeneralSettings::class)->chart_begin_at_zero,
                     'grace' => 2,
                 ],
             ],

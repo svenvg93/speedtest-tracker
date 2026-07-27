@@ -11,4 +11,6 @@ return [
     'default_chart_range_24h' => 'Last 24 hours',
     'default_chart_range_week' => 'Last week',
     'default_chart_range_month' => 'Last month',
+    'chart_begin_at_zero' => 'Begin Y-axis at zero',
+    'chart_begin_at_zero_helper_text' => 'When enabled, chart Y-axes always start at zero instead of scaling to the lowest value.',
 ];

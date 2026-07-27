@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Settings;
 
 use App\Settings\GeneralSettings;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Select;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Grid;
@@ -63,6 +64,9 @@ class General extends SettingsPage
                                                 'month' => __('settings/general.default_chart_range_month'),
                                             ])
                                             ->required(),
+                                        Checkbox::make('chart_begin_at_zero')
+                                            ->label(__('settings/general.chart_begin_at_zero'))
+                                            ->helperText(__('settings/general.chart_begin_at_zero_helper_text')),
                                     ]),
                             ])
                             ->columnSpanFull(),

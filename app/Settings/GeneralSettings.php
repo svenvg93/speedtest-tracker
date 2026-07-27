@@ -8,6 +8,8 @@ class GeneralSettings extends Settings
 {
     public string $default_chart_range;
 
+    public bool $chart_begin_at_zero;
+
     public static function group(): string
     {
         return 'general';
