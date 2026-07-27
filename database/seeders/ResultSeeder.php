@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 use App\Enums\ResultService;
 use App\Enums\ResultStatus;
+use App\Helpers\Benchmark;
+use App\Helpers\Number;
+use App\Settings\ThresholdSettings;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -57,6 +60,8 @@ class ResultSeeder extends Seeder
     {
         DB::table('results')->truncate();
 
+        $thresholds = app(ThresholdSettings::class);
+
         $now = CarbonImmutable::now();
         $rows = [];
 
@@ -66,7 +71,7 @@ class ResultSeeder extends Seeder
 
                 $rows[] = fake()->boolean(8)
                     ? $this->failedResult($server, $timestamp)
-                    : $this->completedResult($server, $timestamp);
+                    : $this->completedResult($server, $timestamp, $thresholds);
 
                 if (count($rows) >= 500) {
                     DB::table('results')->insert($rows);
@@ -84,7 +89,7 @@ class ResultSeeder extends Seeder
      * @param  array{id: int, name: string, host: string, ip: string, location: string, country: string, download_mbps: float, upload_mbps: float, ping_ms: float}  $server
      * @return array<string, mixed>
      */
-    private function completedResult(array $server, CarbonImmutable $timestamp): array
+    private function completedResult(array $server, CarbonImmutable $timestamp, ThresholdSettings $thresholds): array
     {
         $downloadMbps = max(1, $server['download_mbps'] + fake()->randomFloat(2, -$server['download_mbps'] * 0.05, $server['download_mbps'] * 0.05));
         $uploadMbps = max(1, $server['upload_mbps'] + fake()->randomFloat(2, -$server['upload_mbps'] * 0.05, $server['upload_mbps'] * 0.05));
@@ -155,6 +160,8 @@ class ResultSeeder extends Seeder
             'packetLoss' => fake()->randomFloat(2, 0, 1),
         ];
 
+        [$benchmarks, $healthy] = $this->benchmark($downloadBandwidth, $uploadBandwidth, $ping, $thresholds);
+
         return [
             'service' => ResultService::Ookla->value,
             'ping' => $data['ping']['latency'],
@@ -164,14 +171,82 @@ class ResultSeeder extends Seeder
             'upload_bytes' => $uploadBytes,
             'comments' => null,
             'data' => json_encode($data),
-            'benchmarks' => null,
-            'healthy' => true,
+            'benchmarks' => $benchmarks !== [] ? json_encode($benchmarks) : null,
+            'healthy' => $healthy,
             'status' => ResultStatus::Completed->value,
             'scheduled' => true,
             'dispatched_by' => null,
             'created_at' => $timestamp,
             'updated_at' => $timestamp,
         ];
+    }
+
+    /**
+     * Mirrors App\Jobs\Ookla\BenchmarkSpeedtestJob's benchmarking logic.
+     *
+     * @return array{0: array<string, mixed>, 1: ?bool}
+     */
+    private function benchmark(int $downloadBandwidth, int $uploadBandwidth, float $ping, ThresholdSettings $thresholds): array
+    {
+        if (! $thresholds->absolute_enabled) {
+            return [[], null];
+        }
+
+        $benchmarks = [];
+        $healthy = true;
+
+        if (! blank($thresholds->absolute_download) && $thresholds->absolute_download > 0) {
+            $passed = Benchmark::bitrate($downloadBandwidth, ['value' => $thresholds->absolute_download, 'unit' => 'mbps']);
+
+            $benchmarks['download'] = [
+                'bar' => 'min',
+                'passed' => $passed,
+                'type' => 'absolute',
+                'test_value' => Number::bitsToMagnitude(bits: $downloadBandwidth * 8, precision: 0, magnitude: 'mbit'),
+                'benchmark_value' => $thresholds->absolute_download,
+                'unit' => 'mbps',
+            ];
+
+            if (! $passed) {
+                $healthy = false;
+            }
+        }
+
+        if (! blank($thresholds->absolute_upload) && $thresholds->absolute_upload > 0) {
+            $passed = Benchmark::bitrate($uploadBandwidth, ['value' => $thresholds->absolute_upload, 'unit' => 'mbps']);
+
+            $benchmarks['upload'] = [
+                'bar' => 'min',
+                'passed' => $passed,
+                'type' => 'absolute',
+                'test_value' => Number::bitsToMagnitude(bits: $uploadBandwidth * 8, precision: 0, magnitude: 'mbit'),
+                'benchmark_value' => $thresholds->absolute_upload,
+                'unit' => 'mbps',
+            ];
+
+            if (! $passed) {
+                $healthy = false;
+            }
+        }
+
+        if (! blank($thresholds->absolute_ping) && $thresholds->absolute_ping > 0) {
+            $passed = Benchmark::ping($ping, ['value' => $thresholds->absolute_ping]);
+
+            $benchmarks['ping'] = [
+                'bar' => 'max',
+                'passed' => $passed,
+                'type' => 'absolute',
+                'test_value' => round($ping),
+                'benchmark_value' => $thresholds->absolute_ping,
+                'unit' => 'ms',
+            ];
+
+            if (! $passed) {
+                $healthy = false;
+            }
+        }
+
+        return [$benchmarks, $benchmarks !== [] ? $healthy : null];
     }
 
     /**

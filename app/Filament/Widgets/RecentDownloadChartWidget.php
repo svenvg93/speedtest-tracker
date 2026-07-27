@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Helpers\Average;
+use App\Helpers\Benchmark;
 use App\Helpers\Number;
 use App\Models\Result;
 use App\Settings\GeneralSettings;
@@ -25,7 +26,17 @@ class RecentDownloadChartWidget extends ChartWidget
 
     public function getDescription(): ?string
     {
-        return __('general.average').': '.number_format(Average::averageDownload($this->getResults()), 2).' '.__('general.mbps');
+        $results = $this->getResults();
+
+        $description = __('general.average').': '.number_format(Average::averageDownload($results), 2).' '.__('general.mbps');
+
+        $failedPercent = Benchmark::failedPercentage($results, 'download');
+
+        if ($failedPercent !== null) {
+            $description .= ' · '.$failedPercent.'% '.__('general.failed_threshold');
+        }
+
+        return $description;
     }
 
     protected int|string|array $columnSpan = 'full';
@@ -39,7 +50,7 @@ class RecentDownloadChartWidget extends ChartWidget
     protected function getResults(): Collection
     {
         return $this->results ??= Result::query()
-            ->select(['id', 'download', 'created_at'])
+            ->select(['id', 'download', 'benchmarks', 'created_at'])
             ->whereBetween('created_at', [$this->pageFilters['startDate'], $this->pageFilters['endDate']])
             ->orderBy('created_at')
             ->get();

@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Helpers\Average;
+use App\Helpers\Benchmark;
 use App\Models\Result;
 use App\Settings\GeneralSettings;
 use Filament\Widgets\ChartWidget;
@@ -24,7 +25,17 @@ class RecentPingChartWidget extends ChartWidget
 
     public function getDescription(): ?string
     {
-        return __('general.average').': '.number_format(Average::averagePing($this->getResults()), 2).' '.__('general.ms');
+        $results = $this->getResults();
+
+        $description = __('general.average').': '.number_format(Average::averagePing($results), 2).' '.__('general.ms');
+
+        $failedPercent = Benchmark::failedPercentage($results, 'ping');
+
+        if ($failedPercent !== null) {
+            $description .= ' · '.$failedPercent.'% '.__('general.failed_threshold');
+        }
+
+        return $description;
     }
 
     protected int|string|array $columnSpan = 'full';
@@ -38,7 +49,7 @@ class RecentPingChartWidget extends ChartWidget
     protected function getResults(): Collection
     {
         return $this->results ??= Result::query()
-            ->select(['id', 'ping', 'created_at'])
+            ->select(['id', 'ping', 'benchmarks', 'created_at'])
             ->whereBetween('created_at', [$this->pageFilters['startDate'], $this->pageFilters['endDate']])
             ->orderBy('created_at')
             ->get();

@@ -79,6 +79,7 @@ return [
     'total_failed' => 'Total failed tests',
     'total_complted' => 'Total completed tests',
     'total' => 'Total',
+    'failed_threshold' => 'failed threshold',
 
     // Units
     'ms' => 'ms',
