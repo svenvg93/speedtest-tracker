@@ -12,6 +12,10 @@ class GeneralSettings extends Settings
 
     public string $chart_datetime_format;
 
+    public bool $chart_show_average;
+
+    public bool $chart_show_failed_threshold;
+
     public static function group(): string
     {
         return 'general';

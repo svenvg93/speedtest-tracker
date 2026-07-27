@@ -26,16 +26,23 @@ class RecentPingChartWidget extends ChartWidget
     public function getDescription(): ?string
     {
         $results = $this->getResults();
+        $settings = app(GeneralSettings::class);
 
-        $description = __('general.average').': '.number_format(Average::averagePing($results), 2).' '.__('general.ms');
+        $segments = [];
 
-        $failedPercent = Benchmark::failedPercentage($results, 'ping');
-
-        if ($failedPercent !== null) {
-            $description .= ' · '.$failedPercent.'% '.__('general.failed_threshold');
+        if ($settings->chart_show_average) {
+            $segments[] = __('general.average').': '.number_format(Average::averagePing($results), 2).' '.__('general.ms');
         }
 
-        return $description;
+        if ($settings->chart_show_failed_threshold) {
+            $failedPercent = Benchmark::failedPercentage($results, 'ping');
+
+            if ($failedPercent !== null) {
+                $segments[] = $failedPercent.'% '.__('general.failed_threshold');
+            }
+        }
+
+        return $segments !== [] ? implode(' · ', $segments) : null;
     }
 
     protected int|string|array $columnSpan = 'full';
