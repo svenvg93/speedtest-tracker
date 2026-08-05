@@ -7,6 +7,7 @@ use App\Helpers\Benchmark;
 use App\Helpers\Number;
 use App\Models\Result;
 use App\Settings\GeneralSettings;
+use App\Settings\ThresholdSettings;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Database\Eloquent\Collection;
@@ -68,19 +69,35 @@ class RecentDownloadChartWidget extends ChartWidget
         $results = $this->getResults();
         $showFailedThreshold = app(GeneralSettings::class)->chart_show_failed_threshold;
 
-        return [
-            'datasets' => [
-                [
-                    'label' => __('general.download_mbps'),
-                    'data' => $results->map(fn ($item) => ! blank($item->download) ? Number::bitsToMagnitude(bits: $item->download_bits, precision: 2, magnitude: 'mbit') : null),
-                    'borderColor' => 'rgba(14, 165, 233)',
-                    'backgroundColor' => 'rgba(14, 165, 233, 0.1)',
-                    ...Benchmark::pointStyles($results, 'download', 'rgba(14, 165, 233)', $showFailedThreshold),
-                    'fill' => true,
-                    'cubicInterpolationMode' => 'monotone',
-                    'tension' => 0.4,
-                ],
+        $datasets = [
+            [
+                'label' => __('general.download_mbps'),
+                'data' => $results->map(fn ($item) => ! blank($item->download) ? Number::bitsToMagnitude(bits: $item->download_bits, precision: 2, magnitude: 'mbit') : null),
+                'borderColor' => 'rgba(14, 165, 233)',
+                'backgroundColor' => 'rgba(14, 165, 233, 0.1)',
+                ...Benchmark::pointStyles($results, 'download', 'rgba(14, 165, 233)', $showFailedThreshold),
+                'fill' => true,
+                'cubicInterpolationMode' => 'monotone',
+                'tension' => 0.4,
             ],
+        ];
+
+        $thresholds = app(ThresholdSettings::class);
+
+        if ($thresholds->absolute_enabled && ! blank($thresholds->absolute_download)) {
+            $datasets[] = [
+                'label' => __('general.threshold'),
+                'data' => array_fill(0, $results->count(), $thresholds->absolute_download),
+                'borderColor' => 'rgba(239, 68, 68, 0.6)',
+                'borderDash' => [6, 4],
+                'fill' => false,
+                'pointRadius' => 0,
+                'tension' => 0,
+            ];
+        }
+
+        return [
+            'datasets' => $datasets,
             'labels' => $results->map(fn ($item) => $item->created_at->timezone(config('app.display_timezone'))->format(app(GeneralSettings::class)->chart_datetime_format)),
         ];
     }
@@ -91,7 +108,6 @@ class RecentDownloadChartWidget extends ChartWidget
             'plugins' => [
                 'legend' => [
                     'display' => true,
-
                 ],
                 'tooltip' => [
                     'enabled' => true,

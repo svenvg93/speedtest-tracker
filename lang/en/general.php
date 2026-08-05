@@ -68,6 +68,7 @@ return [
     // Metrics
     'metrics' => 'Metrics',
     'average' => 'Average',
+    'threshold' => 'Threshold',
     'high' => 'High',
     'low' => 'Low',
     'faster' => 'faster',

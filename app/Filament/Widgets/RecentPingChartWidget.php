@@ -6,6 +6,7 @@ use App\Helpers\Average;
 use App\Helpers\Benchmark;
 use App\Models\Result;
 use App\Settings\GeneralSettings;
+use App\Settings\ThresholdSettings;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Database\Eloquent\Collection;
@@ -67,19 +68,35 @@ class RecentPingChartWidget extends ChartWidget
         $results = $this->getResults();
         $showFailedThreshold = app(GeneralSettings::class)->chart_show_failed_threshold;
 
-        return [
-            'datasets' => [
-                [
-                    'label' => __('general.ping_ms'),
-                    'data' => $results->map(fn ($item) => ! blank($item->ping) ? round($item->ping, 2) : null),
-                    'borderColor' => 'rgba(16, 185, 129)',
-                    'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
-                    ...Benchmark::pointStyles($results, 'ping', 'rgba(16, 185, 129)', $showFailedThreshold),
-                    'fill' => true,
-                    'cubicInterpolationMode' => 'monotone',
-                    'tension' => 0.4,
-                ],
+        $datasets = [
+            [
+                'label' => __('general.ping_ms'),
+                'data' => $results->map(fn ($item) => ! blank($item->ping) ? round($item->ping, 2) : null),
+                'borderColor' => 'rgba(16, 185, 129)',
+                'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
+                ...Benchmark::pointStyles($results, 'ping', 'rgba(16, 185, 129)', $showFailedThreshold),
+                'fill' => true,
+                'cubicInterpolationMode' => 'monotone',
+                'tension' => 0.4,
             ],
+        ];
+
+        $thresholds = app(ThresholdSettings::class);
+
+        if ($thresholds->absolute_enabled && ! blank($thresholds->absolute_ping)) {
+            $datasets[] = [
+                'label' => __('general.threshold'),
+                'data' => array_fill(0, $results->count(), $thresholds->absolute_ping),
+                'borderColor' => 'rgba(239, 68, 68, 0.6)',
+                'borderDash' => [6, 4],
+                'fill' => false,
+                'pointRadius' => 0,
+                'tension' => 0,
+            ];
+        }
+
+        return [
+            'datasets' => $datasets,
             'labels' => $results->map(fn ($item) => $item->created_at->timezone(config('app.display_timezone'))->format(app(GeneralSettings::class)->chart_datetime_format)),
         ];
     }
