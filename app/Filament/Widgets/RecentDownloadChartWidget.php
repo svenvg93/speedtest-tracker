@@ -66,6 +66,7 @@ class RecentDownloadChartWidget extends ChartWidget
     protected function getData(): array
     {
         $results = $this->getResults();
+        $showFailedThreshold = app(GeneralSettings::class)->chart_show_failed_threshold;
 
         return [
             'datasets' => [
@@ -74,11 +75,10 @@ class RecentDownloadChartWidget extends ChartWidget
                     'data' => $results->map(fn ($item) => ! blank($item->download) ? Number::bitsToMagnitude(bits: $item->download_bits, precision: 2, magnitude: 'mbit') : null),
                     'borderColor' => 'rgba(14, 165, 233)',
                     'backgroundColor' => 'rgba(14, 165, 233, 0.1)',
-                    'pointBackgroundColor' => 'rgba(14, 165, 233)',
+                    ...Benchmark::pointStyles($results, 'download', 'rgba(14, 165, 233)', $showFailedThreshold),
                     'fill' => true,
                     'cubicInterpolationMode' => 'monotone',
                     'tension' => 0.4,
-                    'pointRadius' => count($results) <= 24 ? 3 : 0,
                 ],
             ],
             'labels' => $results->map(fn ($item) => $item->created_at->timezone(config('app.display_timezone'))->format(app(GeneralSettings::class)->chart_datetime_format)),
