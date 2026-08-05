@@ -92,6 +92,10 @@ class RecentDownloadLatencyChartWidget extends ChartWidget
                 'y' => [
                     'beginAtZero' => app(GeneralSettings::class)->chart_begin_at_zero,
                     'grace' => 2,
+                    'title' => [
+                        'display' => true,
+                        'text' => __('general.ms'),
+                    ],
                 ],
             ],
         ];
