@@ -67,7 +67,6 @@ class RecentUploadChartWidget extends ChartWidget
     protected function getData(): array
     {
         $results = $this->getResults();
-        $showFailedThreshold = app(GeneralSettings::class)->chart_show_failed_threshold;
 
         $datasets = [
             [
@@ -75,10 +74,11 @@ class RecentUploadChartWidget extends ChartWidget
                 'data' => $results->map(fn ($item) => ! blank($item->upload) ? Number::bitsToMagnitude(bits: $item->upload_bits, precision: 2, magnitude: 'mbit') : null),
                 'borderColor' => 'rgba(139, 92, 246)',
                 'backgroundColor' => 'rgba(139, 92, 246, 0.1)',
-                ...Benchmark::pointStyles($results, 'upload', 'rgba(139, 92, 246)', $showFailedThreshold),
+                'pointBackgroundColor' => 'rgba(139, 92, 246)',
                 'fill' => true,
                 'cubicInterpolationMode' => 'monotone',
                 'tension' => 0.4,
+                'pointRadius' => count($results) <= 24 ? 3 : 0,
             ],
         ];
 

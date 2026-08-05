@@ -66,7 +66,6 @@ class RecentPingChartWidget extends ChartWidget
     protected function getData(): array
     {
         $results = $this->getResults();
-        $showFailedThreshold = app(GeneralSettings::class)->chart_show_failed_threshold;
 
         $datasets = [
             [
@@ -74,10 +73,11 @@ class RecentPingChartWidget extends ChartWidget
                 'data' => $results->map(fn ($item) => ! blank($item->ping) ? round($item->ping, 2) : null),
                 'borderColor' => 'rgba(16, 185, 129)',
                 'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
-                ...Benchmark::pointStyles($results, 'ping', 'rgba(16, 185, 129)', $showFailedThreshold),
+                'pointBackgroundColor' => 'rgba(16, 185, 129)',
                 'fill' => true,
                 'cubicInterpolationMode' => 'monotone',
                 'tension' => 0.4,
+                'pointRadius' => count($results) <= 24 ? 3 : 0,
             ],
         ];
 
