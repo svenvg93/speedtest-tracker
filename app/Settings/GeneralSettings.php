@@ -8,6 +8,10 @@ class GeneralSettings extends Settings
 {
     public string $default_chart_range;
 
+    public string $datetime_format;
+
+    public string $display_timezone;
+
     public bool $chart_begin_at_zero;
 
     public string $chart_datetime_format;

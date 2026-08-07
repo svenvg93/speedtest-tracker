@@ -10,6 +10,7 @@ use App\Filament\Widgets\RecentUploadChartWidget;
 use App\Filament\Widgets\RecentUploadLatencyChartWidget;
 use App\Filament\Widgets\StatsOverviewWidget;
 use App\Forms\Components\DateFilterForm;
+use App\Settings\GeneralSettings;
 use Carbon\Carbon;
 use Cron\CronExpression;
 use Filament\Pages\Dashboard as BasePage;
@@ -47,7 +48,9 @@ class Dashboard extends BasePage
 
         $cronExpression = new CronExpression($schedule);
 
-        $nextRunDate = Carbon::parse($cronExpression->getNextRunDate(timeZone: config('app.display_timezone')))->format(config('app.datetime_format'));
+        $settings = app(GeneralSettings::class);
+
+        $nextRunDate = Carbon::parse($cronExpression->getNextRunDate(timeZone: $settings->display_timezone))->format($settings->datetime_format);
 
         return __('dashboard.next_speedtest_at').': '.$nextRunDate;
     }

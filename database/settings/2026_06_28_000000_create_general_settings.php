@@ -11,5 +11,7 @@ return new class extends SettingsMigration
         $this->migrator->add('general.chart_datetime_format', config('app.chart_datetime_format'));
         $this->migrator->add('general.chart_show_average', true);
         $this->migrator->add('general.chart_show_failed_threshold', true);
+        $this->migrator->add('general.datetime_format', config('app.datetime_format'));
+        $this->migrator->add('general.display_timezone', config('app.display_timezone'));
     }
 };

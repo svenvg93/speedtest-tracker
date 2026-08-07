@@ -52,6 +52,29 @@ class General extends SettingsPage
             ->components([
                 Tabs::make()
                     ->schema([
+                        Tab::make(__('settings/general.display'))
+                            ->icon(Heroicon::OutlinedComputerDesktop)
+                            ->schema([
+                                Grid::make(['default' => 1, 'md' => 2])
+                                    ->schema([
+                                        Select::make('display_timezone')
+                                            ->label(__('settings/general.display_timezone'))
+                                            ->helperText(__('settings/general.display_timezone_helper_text'))
+                                            ->options(fn (): array => array_combine(
+                                                \DateTimeZone::listIdentifiers(),
+                                                \DateTimeZone::listIdentifiers(),
+                                            ))
+                                            ->searchable()
+                                            ->required(),
+                                        TextInput::make('datetime_format')
+                                            ->label(__('settings/general.datetime_format'))
+                                            ->helperText(__('settings/general.datetime_format_helper_text'))
+                                            ->hint(new HtmlString('&#x1f517;<a href="https://www.php.net/manual/en/datetime.format.php" target="_blank" rel="nofollow">'.__('settings/general.datetime_format_docs').'</a>'))
+                                            ->required(),
+                                    ]),
+                            ])
+                            ->columnSpanFull(),
+
                         Tab::make(__('settings/general.charts'))
                             ->icon(Heroicon::OutlinedChartBar)
                             ->schema([
@@ -68,9 +91,9 @@ class General extends SettingsPage
                                             ])
                                             ->required(),
                                         TextInput::make('chart_datetime_format')
-                                            ->label(__('settings/general.chart_datetime_format'))
-                                            ->helperText(__('settings/general.chart_datetime_format_helper_text'))
-                                            ->hint(new HtmlString('&#x1f517;<a href="https://www.php.net/manual/en/datetime.format.php" target="_blank" rel="nofollow">'.__('settings/general.chart_datetime_format_hint').'</a>'))
+                                            ->label(__('settings/general.datetime_format'))
+                                            ->helperText(__('settings/general.datetime_format_helper_text'))
+                                            ->hint(new HtmlString('&#x1f517;<a href="https://www.php.net/manual/en/datetime.format.php" target="_blank" rel="nofollow">'.__('settings/general.datetime_format_docs').'</a>'))
                                             ->required(),
                                     ]),
                                 Fieldset::make(__('settings/general.chart_display_options'))
