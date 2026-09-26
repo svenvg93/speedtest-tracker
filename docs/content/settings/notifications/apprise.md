@@ -1,36 +1,44 @@
 # Apprise
 
-Apprise provides a unified notification channel that lets you send alerts to numerous services—like Discord, Pushover, and Ntfy as well as many additional platforms
+[Apprise](https://github.com/caronc/apprise) sends notifications to 90+ services, like Discord, Pushover, Ntfy and many more, through a single notification channel.
 
-### Why Apprise
+??? info "Why Apprise"
 
-Apprise allows the application to sent notifications to a wide variety of services. It let us focus on features instead of maintaining X number of notification channels. Essentially helping us cut down on maintenance/feature requests.
+    Using Apprise lets us focus on features instead of maintaining a separate integration for every notification service.
 
 ### Apprise Server
 
-!!! info
+??? info "Support"
 
-    We don't offer support on setting up Apprise, incase of any problems with the Apprise Container please reach out to the Apprise team.
+    We don't offer support on setting up Apprise. In case of any problems with the Apprise container, please reach out to the Apprise team.
 
-To use Apprise, you’ll need to set up your own Apprise instance. This container isn’t created automatically, so make sure to include it in your deployment. See the Apprise [Github Repo](https://github.com/caronc/apprise-api) for the setup instructions. On the notification page you will need to define the location of your Apprise instance. Make sure this instance is reachable for the Speedtest Tracker.
+To use Apprise you need to run your own Apprise server. It isn't included with Speedtest Tracker, so add it to your deployment. See the [Apprise API](https://github.com/caronc/apprise-api) repository for the setup instructions.
+
+| Setting | Description |
+| --- | --- |
+| Apprise Server URL | URL of your Apprise server. It must end with `/notify`, e.g. `http://apprise:8000/notify`. The server needs to be reachable from the Speedtest Tracker container. |
+| Verify SSL | Verify the SSL certificate of the Apprise server. Turn off when using a self-signed certificate. |
 
 ### Notification Channels
 
-Notification channels are the formatted URLs used by Apprise to send notifications to various services. Refer to the [Apprise documentation](https://github.com/caronc/apprise?tab=readme-ov-file#supported-notifications) for a full list of supported channels and their required formats. You can add as many different channels as you wish. The notifications will be sent to all of them.
+Notification channels are the URLs Apprise uses to send notifications to each service. They use the Apprise URL format, not `http://` or `https://`. See the [Apprise documentation](https://github.com/caronc/apprise?tab=readme-ov-file#supported-notifications) for all supported services and their URL formats.
+
+You can add as many channels as you like. Notifications are sent to all of them.
+
+### Test Notification
+
+Save your settings first, then use **Test Apprise** to send a test notification to all channels. If it fails, see the [Apprise errors](../../help/error-messages.md#notifications) for what the message means.
 
 ### Tips and Tricks
 
 #### Format
 
-By default the format used for message is `markdown` This allows us to do some formatting on the message like bold text etc.
+Messages are sent in `markdown` format, so they can include formatting like bold text.
 
 #### Preview Images
 
-By default Apprise does not allow preview images for URLs. This is an default setting on the Apprise instance. Depending on the service used you can override this settings in the notification channel URL. Check the Apprise documentation to see if your service support this and how to set it.
+By default Apprise doesn't show preview images for links. This is a setting of the Apprise server. Depending on the service you can override it in the notification channel URL. Check the Apprise documentation to see if and how your service supports it.
 
 ### Triggers
 
-| Name | Description |
-| --- | --- |
-| on every scheduled speedtest run | On each successful scheduled speedtest a notification will be send to the application. |
-| on threshold failures for scheduled speedtests | On any absolute threshold failure for scheduled speedtest a notification will be send to the application. |
+--8<-- "notification-triggers.md"

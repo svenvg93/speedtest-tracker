@@ -1,6 +1,6 @@
 # Mail
 
-Notifications sent to the mail channel will be emailed to the list of recipients.
+Mail notifications are emailed to the list of recipients.
 
 <figure markdown="span">
   ![Mail settings](../../assets/images/mail-notification.png)
@@ -9,56 +9,71 @@ Notifications sent to the mail channel will be emailed to the list of recipients
 
 ### Setting Up SMTP
 
-Speedtest Tracker uses SMTP mail protocol to send email messages, you can use any service that allows you to send emails via SMTP.
-
-To configure the mail server settings you'll need to update the following variables in your `.env` file or add them to the environment variables passed into the container. When choosing mail scheme both `ssl` and `tls` protocols are supported and you'll want to check with your mail provider for which to use and which port.
+Speedtest Tracker sends email over SMTP, so you can use any mail provider that supports it. Set the variables below as environment variables on the container.
 
 !!! warning
 
-    Make sure these are not set in both your `.env` file or your `docker-compose.yml` file as that can cause issues.
+    Don't set these in both a `.env` file and your `docker-compose.yml` file, as that can cause issues.
 
-```
-MAIL_MAILER=smtp
-MAIL_HOST=
-MAIL_PORT=
-MAIL_USERNAME=
-MAIL_PASSWORD=
-MAIL_FROM_ADDRESS=
-MAIL_FROM_NAME=
-```
-
-!!! info
-
-    `MAIL_SCHEME` is optional, only use it if you need to define `smtp` or `smtps` otherwise Laravel will determine the scheme based on the port provided.
-
-***
+| Variable | Description |
+| --- | --- |
+| `MAIL_MAILER` | Set to `smtp`. |
+| `MAIL_HOST` | Hostname of your SMTP server, e.g. `smtp.gmail.com`. |
+| `MAIL_PORT` | Port of your SMTP server, usually `465` (SSL) or `587` (TLS). Check with your mail provider. |
+| `MAIL_USERNAME` | Username to log in to the SMTP server. |
+| `MAIL_PASSWORD` | Password to log in to the SMTP server. |
+| `MAIL_FROM_ADDRESS` | Email address the notifications are sent from. |
+| `MAIL_FROM_NAME` | Name the notifications are sent from, e.g. `Speedtest Tracker`. |
+| `MAIL_SCHEME` | Optional. Set to `smtp` or `smtps` only if needed, otherwise the scheme is determined from the port. |
+| `MAIL_VERIFY_SSL` | Optional. Set to `false` to skip verifying the SSL certificate of the SMTP server. Default: `true`. |
 
 ### Examples
 
-#### Gmail
+=== "Gmail"
 
-1. Go to [https://myaccount.google.com/](https://myaccount.google.com/) and click on the "Security" tab.
-2. Under the "How you sign in to Google" section, click on "2-Step Verification".
-3. Click on "App passwords".
-4. Enter a name for your app password and click "Create". Use this password for the `MAIL_PASSWORD` env variable in the example configuration below.
+    1. Go to your [Google Account](https://myaccount.google.com/) and open the **Security** tab.
+    2. Under **How you sign in to Google**, click **2-Step Verification**.
+    3. Click **App passwords**.
+    4. Enter a name for your app password and click **Create**. Use this password as `MAIL_PASSWORD`.
 
-```
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=465
-MAIL_USERNAME="username@gmail.com"
-MAIL_PASSWORD="password"
-MAIL_FROM_ADDRESS="username@gmail.com"
-MAIL_FROM_NAME="Speedtest Tracker"
-```
+    ```
+    MAIL_MAILER=smtp
+    MAIL_HOST=smtp.gmail.com
+    MAIL_PORT=465
+    MAIL_USERNAME="username@gmail.com"
+    MAIL_PASSWORD="password"
+    MAIL_FROM_ADDRESS="username@gmail.com"
+    MAIL_FROM_NAME="Speedtest Tracker"
+    ```
 
-### Triggers
+=== "iCloud"
 
-| Name | Description |
-| --- | --- |
-| on every scheduled speedtest run | On each successful scheduled speedtest a notification will be send to the application. |
-| on threshold failures for scheduled speedtests | On any absolute threshold failure for scheduled speedtest  a notification will be send to the application. |
+    1. Sign in to your [Apple Account](https://account.apple.com/) and open the **Sign-In and Security** section.
+    2. Click **App-Specific Passwords** and generate a new password.
+    3. Give it a name, e.g. `Speedtest Tracker`, and copy the generated password. Use this password as `MAIL_PASSWORD`.
+
+    ```
+    MAIL_MAILER=smtp
+    MAIL_HOST=smtp.mail.me.com
+    MAIL_PORT=587
+    MAIL_USERNAME="username@icloud.com"
+    MAIL_PASSWORD="app-specific-password"
+    MAIL_FROM_ADDRESS="username@icloud.com"
+    MAIL_FROM_NAME="Speedtest Tracker"
+    ```
+
+    !!! info
+
+        - `MAIL_USERNAME` must be your main iCloud email address, even when you send from an alias.
+        - `MAIL_FROM_ADDRESS` can be one of your iCloud aliases.
+        - Use port `587` (STARTTLS) or `465` (SSL/TLS).
 
 ### Recipients
 
-A recipient is any valid email address, you can add one or many recipients that will receive notifications based on the triggers selected.
+A recipient is any valid email address. You can add one or more recipients that will receive notifications based on the triggers selected.
+
+Use **Test mail channel** to send a test email to all recipients. If no recipients are added you'll see [Add email recipients!](../../help/error-messages.md#notifications).
+
+### Triggers
+
+--8<-- "notification-triggers.md"
