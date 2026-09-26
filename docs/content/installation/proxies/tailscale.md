@@ -2,6 +2,8 @@
 
 [Tailscale](https://tailscale.com) Mesh VPN service can be used as an sidecar container to access the Speedtest Tracker within your Tailnet on its own MagicDNS name.
 
+--8<-- "community-proxy.md"
+
 ## Tailscale Auth key
 
 Generate an auth key for tailscale so the docker container can access your tailnet.

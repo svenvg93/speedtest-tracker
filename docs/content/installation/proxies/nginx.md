@@ -3,6 +3,8 @@
 [Nginx](https://nginx.org) can be used as a Reverse Proxy in front of Speedtest
 Tracker to expose the Dashboard publicly with a trusted certificate.
 
+--8<-- "community-proxy.md"
+
 First, you will need to add the `APP_URL` and `ASSET_URL` environment variables
 to your `docker-compose.yml`.
 

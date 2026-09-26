@@ -2,6 +2,8 @@
 
 A [Cloudflare tunnel](https://www.cloudflare.com/products/tunnel/) can be used as a reverse proxy in front of Speedtest Tracker when you want to expose the application publicly without exposing your IP address.
 
+--8<-- "community-proxy.md"
+
 ### Cloudflare Tunnel Configuration
 
 * Update your `APP_URL` to the public URL you are going to use and restart the service.

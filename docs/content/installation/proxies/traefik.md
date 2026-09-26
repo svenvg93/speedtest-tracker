@@ -2,6 +2,8 @@
 
 [Traefik](https://traefik.io) can be used as a Reverse Proxy in front of Speedtest Tracker when you want to expose the Dashboard publicly with a trusted certificate. You will need at add the `APP_URL` environment and needed labels to the docker compose have Traefik apply the certificate and routing.
 
+--8<-- "community-proxy.md"
+
 Docker-Compose:
 
 ```yaml hl_lines="15 16 21 22 23 24 25 26"

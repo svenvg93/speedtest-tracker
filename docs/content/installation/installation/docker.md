@@ -9,6 +9,12 @@ description: >-
 
 Setting up your environment with Docker Compose is the recommended way as it'll setup the application and a database for you. These steps will run you through setting up the application using Docker and Docker Compose.
 
+Speedtest Tracker is containerized so you can run it anywhere you run your containers. The image is built by LinuxServer.io, build information can be found on [LinuxServer.io Fleet](https://fleet.linuxserver.io/image?name=linuxserver/speedtest-tracker).
+
+!!! danger
+
+    Only the installation methods in this section are supported: Docker, Kubernetes, QNAP, Synology and Unraid. Any other installation methods, such as bare metal setups or Proxmox LXCs, are **not supported** by this project.
+
 ### Install with Docker
 
 #### Generate an Application Key

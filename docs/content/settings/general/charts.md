@@ -6,6 +6,10 @@ description: Settings for the dashboard charts.
 
 You can find these settings under **Settings → General → Charts**.
 
+!!! info
+
+    Only admins can view and change these settings.
+
 | Setting | Default | Description |
 | --- | --- | --- |
 | Default chart range (days) | `7` | The number of days shown by default when a chart first loads. Must be at least `1`. |
