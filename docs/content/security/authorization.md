@@ -6,14 +6,13 @@
 | --- | --- | --- |
 | View any (list) | :lucide-circle-check:{ .green } | :lucide-circle-check:{ .green } |
 | View (show) | :lucide-circle-check:{ .green } | :lucide-circle-check:{ .green } |
-| Create | :lucide-circle-x:{ .red } | :lucide-circle-x:{ .red } |
 | Update | :lucide-circle-check:{ .green } | :lucide-circle-check:{ .green } |
 | Delete any (bulk) | :lucide-circle-x:{ .red } | :lucide-circle-check:{ .green } |
 | Delete | :lucide-circle-x:{ .red } | :lucide-circle-check:{ .green } |
 
 #### Notes
 
-1. Creating results are done through a scheduled Speedtest or triggered manually.
+1. Results can't be added by hand. A result is created every time a speedtest runs, either on a [schedule](../installation/environment-variables.md#speed-tests) or when a user [triggers one manually](#other).
 2. Updating a result only applies to editing the record's comments.
 
 ***

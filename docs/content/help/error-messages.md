@@ -1,89 +1,277 @@
+---
+description: Common error messages, what causes them and how to fix them.
+---
+
 # Error Messages
 
 ### Troubleshooting
 
-For all below errors there will be more information provided in the container logs. You can check the logs for more details by checking the container logs by running `docker logs speedtest-tracker`.
+Most errors below have more details in the container logs. Start there, and enable debugging if the logs don't tell you enough.
 
-or any other equivalent command for your setup.
+#### Check the logs
 
-??? tip "Enable Debugging"
+```bash
+docker logs speedtest-tracker
+```
 
-    By default `APP_DEBUG` is set to `false` in production to prevent verbose error outputs. To debug the issue follow the steps below.
+!!! note ""
 
-    1. Set `APP_DEBUG=true` as a environment variable
-    2. Restart the container
-    3. Reproduce the error by visiting the page or performing the action that caused the error
-    4. View the output in the UI or in the logs to help resolve the issue, if you can not resolve it open an issue in the [GitHub](https://github.com/alexjustesen/speedtest-tracker/issues) repository
-    5. In the output the line that starts with `[timestamp] production.ERROR:` is the error the server ran into
-    6. Once the issue is resolved you can remove the `APP_DEBUG` environment variable
+    Replace `speedtest-tracker` with your container name if it's different.
+
+#### Enable debugging
+
+By default `APP_DEBUG` is set to `false` in production to prevent verbose error output. To debug an issue:
+
+1. Add the environment variable to your container:
+
+    ```bash
+    APP_DEBUG=true
+    ```
+
+2. Restart the container.
+3. Reproduce the error by visiting the page or performing the action that caused it.
+4. View the output in the UI or in the [logs](#check-the-logs). The line that starts with `[timestamp] production.ERROR:` is the error the server ran into.
+5. Once the issue is resolved, remove the `APP_DEBUG` environment variable.
+
+If you can't resolve it, open an issue on [GitHub](https://github.com/alexjustesen/speedtest-tracker/issues) and include the error from the logs.
 
 ### Application
 
 ??? failure "I'm getting a `500 | SERVER ERROR` error"
 
-    The `500 | SERVER ERROR` is caused by either a bug or a misconfiguration. You must enable debugging (see [Troubleshooting](#troubleshooting)) to determine the exact cause of the error.
+    The application ran into a bug or a misconfiguration.
 
-??? failure "Unsupported cipher or incorrect key length. Supported ciphers are: `aes-128-cbc`, `aes-256-cbc`, `aes-128-gcm,` `aes-256-gcm`."
+    **How to fix**
 
-    This error is shown when the `APP_KEY` is not set or not set correctly. Make suer you set the `APP_KEY` as described in the [installation steps](../installation/installation/docker.md#install-with-docker).
+    * [Enable debugging](#enable-debugging) to see the exact cause of the error.
+
+??? failure "Unsupported cipher or incorrect key length. Supported ciphers are: `aes-128-cbc`, `aes-256-cbc`, `aes-128-gcm`, `aes-256-gcm`."
+
+    The [`APP_KEY`](../installation/environment-variables.md#application) is not set or not set correctly.
+
+    **How to fix**
+
+    * [Generate an application key](../installation/installation/docker.md#generate-an-application-key) and set it as `APP_KEY`, including the `base64:` prefix.
+    * Restart the container.
+
+??? failure "403 | FORBIDDEN on every page"
+
+    [`ALLOWED_IPS`](../installation/environment-variables.md#application) is set and the IP address you're connecting from isn't in the list.
+
+    **Possible reasons**
+
+    * Your IP address changed, or you're connecting through a reverse proxy or VPN with a different address.
+    * You used a range like `192.168.1.0/24`. `ALLOWED_IPS` only matches exact IP addresses, not ranges.
+
+    **How to fix**
+
+    * Add your exact IP address to `ALLOWED_IPS` (comma separated), or remove the variable, and restart the container.
 
 ### Speedtest Process
 
 ??? failure "Failed to connected to hostname"
 
-    When a speedtest is being [processed](../other/speedtest-process.md) Speedtest Tracker will make a ICMP ping to [icanhazip.com](http://icanhazip.com) to check if there is an internet connection before starting the Speedtest
+    ```
+    Failed to connected to hostname "<hostname>". Error received "<error>". HTTP fallback also failed.
+    ```
 
-    **Possible reasons**:
+    Before [running a speedtest](../other/speedtest-process.md), Speedtest Tracker checks for an internet connection. It first sends an ICMP ping to [icanhazip.com](https://icanhazip.com). If that fails it falls back to an HTTP request, and this error is shown when both fail.
 
-    * There is a docker network problem or no internet connection.
-    * Some DNS blocks lists will block this domain, if you're getting errors and your server has access to the internet you'll need to add this to your allow lists.
-    * _Most_ Docker setups can send ICMP requests without needed elevated privileges on the host or in the container. That being said if your Docker user doesn't run with elevated permissions or doesn't belong to the Docker group you can get a failure on this step. To allow the user to send ICMP requests you need to add the permission to the container.
+    When the ping command itself isn't available you'll see `Ping command is unavailable and HTTP fallback also failed.` instead.
 
-    **Configuration options**
+    **Possible reasons**
 
-    * Use available [Environment Variables](../installation/environment-variables.md#speed-tests) to change the endpoint to your liking
+    * There is a Docker network problem or no internet connection.
+    * A DNS block list blocks the hostname. If your server has internet access, add it to your allow list.
+    * Your Docker user doesn't have permission to send ICMP requests. _Most_ Docker setups can without elevated privileges, but if yours can't you need to add the permission to the container.
+
+    **How to fix**
+
+    * Use a different hostname with [`SPEEDTEST_INTERNET_CHECK_HOSTNAME`](../installation/environment-variables.md#speed-tests).
 
 ??? failure "Failed to fetch external IP address"
 
-    When the `SPEEDTEST_SKIP_IPS` environment variable is Speedtest Tracker will make a call to [http://icanhazip.com](http://icanhazip.com/) to get your external IP address. This is done check if your external IP address (WAN IP) should be skipped.
+    ```
+    Failed to fetch external IP address from "<url>". See the logs for more details.
+    ```
 
-    **Possible reasons**:
+    When [`SPEEDTEST_SKIP_IPS`](../installation/environment-variables.md#speed-tests) is set, Speedtest Tracker fetches your external (WAN) IP address from [icanhazip.com](https://icanhazip.com) to check if the test should be skipped. This error is shown when that request fails.
 
-    * There is a docker network problem or no internet connection.
-    * Some DNS blocks lists will block this domain, if you're getting errors and your server has access to the internet you'll need to add this to your allow lists.
+    **Possible reasons**
 
-    **Configuration options**
+    * There is a Docker network problem or no internet connection.
+    * A DNS block list blocks the domain. If your server has internet access, add it to your allow list.
 
-    * Use available [Environment Variables](../installation/environment-variables.md#speed-tests) to change the endpoint to your liking. :warning: Whatever service you choose needs to only return an IP address in the body of the response for this to work.
+    **How to fix**
+
+    * Use a different service with [`SPEEDTEST_EXTERNAL_IP_URL`](../installation/environment-variables.md#speed-tests).
+
+    !!! warning
+
+        The service you choose must return only the IP address in the body of the response.
+
+??? info "Test skipped: IP address found in skip list"
+
+    ```
+    "<ip>" was found in external IP address skip list.
+    "<ip>" was found in external IP address skip list within range "<range>".
+    ```
+
+    Not an error: the scheduled test was **skipped** because your external IP address matches [`SPEEDTEST_SKIP_IPS`](../installation/environment-variables.md#speed-tests). Only scheduled tests are skipped, manual tests always run.
+
+    **How to fix**
+
+    * If the test shouldn't have been skipped, remove the IP address or range from `SPEEDTEST_SKIP_IPS`.
 
 ### Ookla Related
 
+Most of these errors come from the Ookla speedtest CLI. When the CLI returns more than one error, they're shown together separated by ` | `.
+
+??? failure "An unexpected error occurred while running the Ookla CLI."
+
+    The speedtest CLI failed, but its output didn't contain an error message Speedtest Tracker could read.
+
+    **How to fix**
+
+    * [Enable debugging](#enable-debugging) and check [the logs](#check-the-logs) for the CLI output.
+
 ??? failure "Configuration - Could not retrieve or read configuration (ConfigurationError)"
 
-    This is usually thrown when the CLI fails to reach the internet (internet down) or the specified server.
+    The CLI couldn't reach the internet or the specified server.
+
+    **How to fix**
+
+    * Check the internet connection of the container and [the logs](#check-the-logs).
 
 ??? failure "Configuration - No servers defined (NoServersException)"
 
-    This usually means the defined server is no longer available. Remove it from your server list and try testing with a different server.
+    The defined server is most likely no longer available.
+
+    **How to fix**
+
+    * Remove the server from [`SPEEDTEST_SERVERS`](../installation/environment-variables.md#speed-tests) and pick another one from the [Ookla server list](https://www.speedtest.net/api/js/servers).
 
 ??? failure "Server Selection - Failed to find a working test server. (NoServers)"
 
-    Not 100% sure what causes this exception yet but it's likely when the CLI can't locate a local server. You should specify a list of servers to see if that addresses the issue.
+    The CLI can't find a server near you. The exact cause of this error isn't known yet.
 
-??? failure "Unable to retrieve Ookla servers, check internet connection and see logs."
+    **How to fix**
 
-    This errors is shown when we try to retrieve the Ookla server list when selecting an server wehn running an manual speedtest. We get the list from: [https://www.speedtest.net/api/js/servers](https://www.speedtest.net/api/js/servers).
+    * Specify a list of servers with [`SPEEDTEST_SERVERS`](../installation/environment-variables.md#speed-tests).
 
-    This error is useually caused by a docker network problem or no internet connection. You can check the [container logs](error-messages.md#troubleshooting) for more details.
+??? failure "⚠️ Unable to retrieve Ookla servers, check internet connection and see logs."
 
-### InfluxDB
+    Shown when the server list can't be retrieved while selecting a server for a manual speedtest. The list is fetched from the [Ookla server list](https://www.speedtest.net/api/js/servers).
 
-??? failure "Failed to write to InfluxDB"
+    **Possible reasons**
 
-    When Speedtest Tracker fails to write data to InfluxDB this error is shown. The [container logs](error-messages.md#troubleshooting) will show more details on why it failed.
+    * There is a Docker network problem or no internet connection.
 
-    **Possible reasons:**
+    **How to fix**
 
-    * Connectivity problem to influxdb
-    * Problem with authentication
-    * Specified bucket does not exist in InfluxDB
+    * Check [the logs](#check-the-logs) for more details.
+
+??? failure "Error fetching servers"
+
+    Shown on **Tools → List Ookla Servers** when the server list can't be fetched. The message below the title has the reason.
+
+    **Possible reasons**
+
+    * There is a Docker network problem or no internet connection.
+
+    **How to fix**
+
+    * Check the internet connection of the container and [the logs](#check-the-logs).
+
+### Notifications
+
+These are shown when you use the test buttons under **Settings → Notifications**.
+
+??? failure "You need to add Apprise channel URLs!"
+
+    No channel URLs are configured for [Apprise](../settings/notifications/apprise.md).
+
+    **How to fix**
+
+    * Add at least one [notification channel](../settings/notifications/apprise.md#notification-channels) URL.
+
+??? failure "Apprise Server URL is not configured"
+
+    The URL of your Apprise server isn't set.
+
+    **How to fix**
+
+    * Set the Apprise Server URL. Speedtest Tracker doesn't include an Apprise server, see [Apprise Server](../settings/notifications/apprise.md#apprise-server).
+
+??? failure "Failed to send Apprise test notification"
+
+    The test notification couldn't be delivered. The message below the title tells you why:
+
+    | Message | Cause |
+    | --- | --- |
+    | `Could not connect to Apprise server at <url>` | The hostname can't be resolved. Check the URL and your DNS. |
+    | `Connection refused by Apprise server at <url>` | Nothing is listening on that address and port. Check that the Apprise container is running. |
+    | `Connection to Apprise server at <url> timed out` | The server didn't respond. Check the network between the containers. |
+    | `Failed to connect to Apprise server at <url>` | Another connection error. Check [the logs](#check-the-logs). |
+    | `Apprise returned an error, please check Apprise logs for details` | Apprise was reached but couldn't send the notification, usually because of an invalid channel URL. |
+
+    **How to fix**
+
+    * Make sure the Apprise server is reachable from the Speedtest Tracker container.
+    * Check the channel URL format in the [Apprise documentation](https://github.com/caronc/apprise?tab=readme-ov-file#supported-notifications).
+
+??? failure "Add email recipients!"
+
+    No recipients are configured for [Mail](../settings/notifications/mail.md) notifications.
+
+    **How to fix**
+
+    * Add at least one [recipient](../settings/notifications/mail.md#recipients).
+
+??? failure "Test webhook failed"
+
+    The [webhook](../settings/notifications/webhook.md) test couldn't be delivered. The result appears in the 🔔 notifications, with the error below the title.
+
+    **How to fix**
+
+    * Check that the webhook URL is correct and reachable from the container.
+
+### Data Integrations
+
+??? failure "Influxdb test failed"
+
+    Shown after **Test connection** on the [InfluxDB v2](../settings/data-platforms/influxdb2.md) settings, when test data can't be written.
+
+    **Possible reasons**
+
+    * InfluxDB can't be reached from the container.
+    * The token is wrong or doesn't have write access.
+    * The bucket doesn't exist in InfluxDB.
+
+    **How to fix**
+
+    * Check the [InfluxDB v2 settings](../settings/data-platforms/influxdb2.md#settings) and [the logs](#check-the-logs).
+
+??? failure "Failed to bulk write to Influxdb."
+
+    Shown when **Export current results** to InfluxDB fails. The possible reasons are the same as for the connection test above.
+
+    **How to fix**
+
+    * Use **Test connection** first, then check [the logs](#check-the-logs).
+
+??? failure "403 | FORBIDDEN on `/prometheus`"
+
+    Your Prometheus server's IP address isn't in the [allowed IPs](../settings/data-platforms/prometheus.md#allowed-ips) list.
+
+    **How to fix**
+
+    * Add the IP address or range (e.g. `172.18.0.0/16`) of your Prometheus server to the allowed IPs.
+
+??? failure "404 | NOT FOUND on `/prometheus`"
+
+    The Prometheus endpoint is disabled.
+
+    **How to fix**
+
+    * Enable [Prometheus](../settings/data-platforms/prometheus.md) under **Settings → Data Integration**.

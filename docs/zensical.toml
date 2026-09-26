@@ -31,6 +31,7 @@ nav = [
     { "Database Drivers" = "installation/database-drivers.md" },
   ] },
   { "Help" = [
+    "help/index.md",
     { "Error Messages" = "help/error-messages.md" },
     { "Frequently Asked Questions" = "help/faqs.md" },
   ] },
@@ -182,7 +183,8 @@ pymdownx.keys = {}
 pymdownx.magiclink = {}
 pymdownx.mark = {}
 pymdownx.smartsymbols = {}
-# pymdownx.snippets.base_path = "includes"
+pymdownx.snippets.base_path = ["includes"]
+pymdownx.snippets.auto_append = ["abbreviations.md"]
 pymdownx.superfences.custom_fences = [
   { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
 ]
