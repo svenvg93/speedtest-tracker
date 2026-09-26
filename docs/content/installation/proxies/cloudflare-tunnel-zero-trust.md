@@ -1,4 +1,4 @@
-# Cloudflare Tunnel (Zero Trust)
+# Cloudflare Tunnel 
 
 A [Cloudflare tunnel](https://www.cloudflare.com/products/tunnel/) can be used as a reverse proxy in front of Speedtest Tracker when you want to expose the application publicly without exposing your IP address.
 
@@ -14,19 +14,17 @@ A [Cloudflare tunnel](https://www.cloudflare.com/products/tunnel/) can be used a
   * **Domain:** The domain you want to access the Speedtest Tracker on.
   * **Type:** Connection type to the Speedtest Tracker (http/https)
     * When choosing HTTPS you will need to disable the TLS verification under `Additional application settings -> TLS -> No TLS Verify`
-  * **URL:** The URL to access the Speedtest Tracker. This can be either the IP Address:Port or the container\_name:port.
+  * **URL:** The URL to access the Speedtest Tracker. This can be either the `IP Address:Port` or the `container_name:port`.
 
 !!! info
+    When using the `container_name` Cloudflare Tunnel and Speedtest Tracker need to be on the same Docker network.
 
-    When using the container\_name Cloudflare Tunnel and Speedtest Tracker need to be on the same Docker network.
-
-![](../../assets/images/cf-tunnel.png)
 
 ### Docker Configuration
 
 Docker-Compose:
 
-```yaml
+```yaml hl_lines="15 16"
 services:
     speedtest-tracker:
         container_name: speedtest-tracker
@@ -41,8 +39,8 @@ services:
             - CHART_DATETIME_FORMAT= 
             - DATETIME_FORMAT=
             - APP_TIMEZONE=
-            - APP_URL=https://speedtest.yourdomain.com # Change this to your domain name
-            - ASSET_URL=https://speedtest.yourdomain.com # Change this to your domain name
+            - APP_URL=https://speedtest.yourdomain.com # (1)!
+            - ASSET_URL=https://speedtest.yourdomain.com # (2)!
         volumes:
             - /path/to/data:/config
             - /path/to-custom-ssl-keys:/config/keys
@@ -50,11 +48,9 @@ services:
         restart: unless-stopped
 ```
 
-!!! info
+1. URL you want to access Speedtest Tracker on. Change this to your domain name.
+2. URL used to load the assets like CSS and JavaScript. Must be the same as `APP_URL`.
+
+!!! info 
 
     Depending on your Cloudflare Tunnel configuration, you need to make sure the Speedtest Tracker and Cloudflare Tunnel are on the same docker network.
-
-| Added compose part | Description |
-| --- | --- |
-| `APP_URL` | URL you want to access the WebGui on. |
-| `ASSET_URL` | URL used for loading all the needed assets. Need to be the same as the `APP_URL`. |

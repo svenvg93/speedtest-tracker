@@ -6,7 +6,7 @@ Tracker to expose the Dashboard publicly with a trusted certificate.
 First, you will need to add the `APP_URL` and `ASSET_URL` environment variables
 to your `docker-compose.yml`.
 
-```yaml
+```yaml hl_lines="15 16"
 services:
     speedtest-tracker:
         container_name: speedtest-tracker
@@ -21,15 +21,17 @@ services:
             - CHART_DATETIME_FORMAT= 
             - DATETIME_FORMAT=
             - APP_TIMEZONE=
-            # Change both below to the desired domain
-            - APP_URL=https://speedtest.yourdomain.com
-            - ASSET_URL=https://speedtest.yourdomain.com
+            - APP_URL=https://speedtest.yourdomain.com # (1)!
+            - ASSET_URL=https://speedtest.yourdomain.com # (2)!
         volumes:
             - /path/to/data:/config
             - /path/to-custom-ssl-keys:/config/keys
         image: lscr.io/linuxserver/speedtest-tracker:latest
         restart: unless-stopped
 ```
+
+1. URL you want to access Speedtest Tracker on. Change this to your domain name.
+2. URL used to load the assets like CSS and JavaScript. Must be the same as `APP_URL`.
 
 Next, you will need to configure nginx to proxy to the Speedtest Tracker app.
 

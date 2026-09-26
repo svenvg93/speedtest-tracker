@@ -29,16 +29,14 @@ nav = [
       { "Environment Variables" = "installation/environment-variables.md" },
     ] },
     { "Database Drivers" = "installation/database-drivers.md" },
-  ] },
-  { "Help" = [
-    "help/index.md",
-    { "Error Messages" = "help/error-messages.md" },
-    { "Frequently Asked Questions" = "help/faqs.md" },
-  ] },
-  { "Security" = [
-    { "Authentication" = "security/authentication.md" },
-    { "Authorization" = "security/authorization.md" },
-    { "Encryption" = "security/encryption.md" },
+    { "Health Check" = "installation/health-check.md" },
+    { "Proxies" = [
+      "installation/proxies/index.md",
+      { "Cloudflare Tunnel " = "installation/proxies/cloudflare-tunnel-zero-trust.md" },
+      { "Traefik" = "installation/proxies/traefik.md" },
+      { "Tailscale" = "installation/proxies/tailscale.md" },
+      { "Nginx" = "installation/proxies/nginx.md" },
+    ] },
   ] },
   { "Settings" = [
     { "Data Integrations" = [
@@ -54,32 +52,27 @@ nav = [
       { "Webhook" = "settings/notifications/webhook.md" },
     ] },
   ] },
-  { "Other" = [
-    { "Speedtest Process" = "other/speedtest-process.md" },
-    { "Proxies" = [
-      "other/proxies/index.md",
-      { "Cloudflare Tunnel (Zero Trust)" = "other/proxies/cloudflare-tunnel-zero-trust.md" },
-      { "Traefik" = "other/proxies/traefik.md" },
-      { "Tailscale" = "other/proxies/tailscale.md" },
-      { "Nginx" = "other/proxies/nginx.md" },
-    ] },
-    { "Commands" = "other/commands.md" },
-    { "Data Dictionary" = "other/data-dictionary.md" },
-    { "Embed Dashboard" = "other/embed-dashboard.md" },
-    { "Health Check" = "other/health-check.md" },
-    { "Community Projects" = "other/community-projects.md" },
+  { "Security" = [
+    { "Authentication" = "security/authentication.md" },
+    { "Authorization" = "security/authorization.md" },
+    { "Encryption" = "security/encryption.md" },
   ] },
   { "API" = [
     { "Authorization" = "api/authorization.md" },
   ] },
+  { "Other" = [
+    { "Speedtest Process" = "other/speedtest-process.md" },
+    { "Commands" = "other/commands.md" },
+    { "Data Dictionary" = "other/data-dictionary.md" },
+    { "Community Projects" = "other/community-projects.md" },
+  ] },
+  { "Help" = [
+    "help/index.md",
+    { "Error Messages" = "help/error-messages.md" },
+    { "Frequently Asked Questions" = "help/faqs.md" },
+  ] },
   { "Contributing" = [
     { "Development Environment" = "contributing/development-environment.md" },
-  ] },
-  { "More" = [
-    { "Source Code" = "https://github.com/alexjustesen/speedtest-tracker" },
-    { "Releases" = "https://github.com/alexjustesen/speedtest-tracker/releases" },
-    { "About Me" = "https://alexjustesen.com/?utm_campaign=oss-projects&utm_source=speedtest-tracker-docs&utm_medium=textlink" },
-    { "Donate" = "https://github.com/sponsors/alexjustesen" },
   ] },
 ]
 

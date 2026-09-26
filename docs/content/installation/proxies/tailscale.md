@@ -17,14 +17,14 @@ Save this Auth Key. We will need this later on.
 
 Docker-Compose:
 
-```yaml
+```yaml hl_lines="7 22 34 35"
 services:
   tailscale-speedtest:
     image: tailscale/tailscale
     container_name: tailscale_speedtest-tracker
     hostname: speedtest
     environment:
-      - TS_AUTHKEY=
+      - TS_AUTHKEY= # (1)!
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_USERSPACE=false
     volumes:
@@ -39,7 +39,7 @@ services:
     container_name: speedtest-tracker-tailscale
     depends_on:
       - tailscale-speedtest
-    network_mode: service:tailscale-speedtest
+    network_mode: service:tailscale-speedtest # (2)!
     environment:
         - PUID=1000
         - PGID=1000
@@ -51,8 +51,8 @@ services:
         - CHART_DATETIME_FORMAT= 
         - DATETIME_FORMAT=
         - APP_TIMEZONE=
-        - APP_URL=https://speedtest.yourtailnet.ts.net # Change this to your MagicDNS name
-        - ASSET_URL=https://speedtest.yourtailnet.ts.net # Change this to your MagicDNS name
+        - APP_URL=https://speedtest.yourtailnet.ts.net # (3)!
+        - ASSET_URL=https://speedtest.yourtailnet.ts.net # (4)!
     volumes:
         - /path/to/data:/config
         - /path/to-custom-ssl-keys:/config/keys
@@ -60,8 +60,7 @@ services:
     restart: unless-stopped
 ```
 
-| Added compose part | Description                                                                             |
-| ------------------ | --------------------------------------------------------------------------------------- |
-| `APP_URL`          | URL you want to access the WebGui on. This will need to be the Tailscale Magic DNS name |
-| `ASSET_URL`        | URL used for loading all the needed assets. Need to be the same as the `APP_URL`.       |
-| `TS_AUTHKEY`       | Auth key for Tailscale                                                                  |
+1. The [auth key](#tailscale-auth-key) you generated above.
+2. Speedtest Tracker uses the network of the Tailscale container, so it's reachable on your tailnet.
+3. URL you want to access Speedtest Tracker on. This needs to be the Tailscale MagicDNS name.
+4. URL used to load the assets like CSS and JavaScript. Must be the same as `APP_URL`.

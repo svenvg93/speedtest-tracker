@@ -8,7 +8,7 @@ description: >-
 
 These configurations are provided by the community:
 
-- [Cloudflare Tunnel (Zero Trust)](cloudflare-tunnel-zero-trust.md)
+- [Cloudflare Tunnel ](cloudflare-tunnel-zero-trust.md)
 - [Traefik](traefik.md)
 - [Tailscale](tailscale.md)
 - [Nginx](nginx.md)
