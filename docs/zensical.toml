@@ -39,6 +39,10 @@ nav = [
     ] },
   ] },
   { "Settings" = [
+    { "General" = [
+      "settings/general/index.md",
+      { "Charts" = "settings/general/charts.md" },
+    ] },
     { "Data Integrations" = [
       "settings/data-platforms/index.md",
       { "InfluxDB v2" = "settings/data-platforms/influxdb2.md" },
