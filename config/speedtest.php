@@ -21,14 +21,6 @@ return [
     'chart_only_show_avg_latency' => (bool) env('CHART_ONLY_SHOW_AVG_LATENCY', false),
 
     /**
-     * Speedtest settings.
-     */
-    'preflight' => [
-        'external_ip_url' => env('SPEEDTEST_CHECKINTERNET_URL') ?? env('SPEEDTEST_EXTERNAL_IP_URL', 'https://icanhazip.com'),
-        'internet_check_hostname' => env('SPEEDTEST_CHECKINTERNET_URL') ?? env('SPEEDTEST_INTERNET_CHECK_HOSTNAME', 'icanhazip.com'),
-    ],
-
-    /**
      * IP filtering settings.
      */
     'allowed_ips' => env('ALLOWED_IPS'),
