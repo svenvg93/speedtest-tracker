@@ -34,3 +34,7 @@ yarn-error.log
 /AGENTS.md
 /CLAUDE.md
 /opencode.json
+
+# Docs
+/docs/site
+/docs/.cache

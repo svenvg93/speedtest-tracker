@@ -1,0 +1,8 @@
+/* Colour an icon, e.g. :lucide-circle-check-big:{ .green } or :lucide-circle-x:{ .red } */
+.md-typeset .green {
+  color: #00c853;
+}
+
+.md-typeset .red {
+  color: #ff1744;
+}

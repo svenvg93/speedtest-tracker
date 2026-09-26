@@ -1,0 +1,307 @@
+---
+icon: lucide/container
+description: >-
+  These instructions will run you through setting up Speedtest Tracker on a
+  Docker server using Docker Compose or Docker run.
+---
+
+# Docker
+
+Setting up your environment with Docker Compose is the recommended way as it'll setup the application and a database for you. These steps will run you through setting up the application using Docker and Docker Compose.
+
+### Install with Docker
+
+#### Generate an Application Key
+
+Run the command below to generate a key, the key is required for [encryption](../../security/encryption.md). Copy this key including the `base64:` prefix and paste it as your `APP_KEY` value.
+
+```bash
+echo "base64:$(openssl rand -base64 32 2>/dev/null)"
+```
+
+#### Setting Up Docker
+
+SQLite is fine for most installs but you can also use more traditional relational databases like MariaDB, MySQL and Postgres.
+
+!!! info
+
+    You will need to get your user's `PUID` and `PGID`, you can do this by running `id $user` on the host.
+
+    [https://docs.linuxserver.io/general/understanding-puid-and-pgid/](https://docs.linuxserver.io/general/understanding-puid-and-pgid/)
+
+=== "Docker Compose"
+
+    === "SQLite"
+
+        ```yaml
+        services:
+            speedtest-tracker:
+                image: lscr.io/linuxserver/speedtest-tracker:latest
+                restart: unless-stopped
+                container_name: speedtest-tracker
+                ports:
+                    - 8080:80
+                    - 8443:443
+                environment:
+                    - PUID=
+                    - PGID=
+                    - APP_KEY= # Required
+                    - APP_URL= # Required
+                    - DB_CONNECTION=sqlite
+                volumes:
+                    - /path/to/data:/config
+                    - /path/to-custom-ssl-keys:/config/keys
+        ```
+
+    === "MariaDB"
+
+        ```yaml
+        services:
+            speedtest-tracker:
+                image: lscr.io/linuxserver/speedtest-tracker:latest
+                restart: unless-stopped
+                container_name: speedtest-tracker
+                ports:
+                    - 8080:80
+                    - 8443:443
+                environment:
+                    - PUID=
+                    - PGID=
+                    - APP_KEY= # Required
+                    - APP_URL= # Required
+                    - DB_CONNECTION=mariadb
+                    - DB_HOST=db
+                    - DB_PORT=3306
+                    - DB_DATABASE=speedtest_tracker
+                    - DB_USERNAME=speedtest_tracker
+                    - DB_PASSWORD=password
+                volumes:
+                    - /path/to/data:/config
+                    - /path/to-custom-ssl-keys:/config/keys
+                depends_on:
+                    - db
+            db:
+                image: mariadb:11
+                restart: always
+                environment:
+                    - MYSQL_DATABASE=speedtest_tracker
+                    - MYSQL_USER=speedtest_tracker
+                    - MYSQL_PASSWORD=password
+                    - MYSQL_RANDOM_ROOT_PASSWORD=true
+                volumes:
+                    - speedtest-db:/var/lib/mysql
+                healthcheck:
+                    test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+                    interval: 5s
+                    retries: 3
+                    timeout: 5s
+        volumes:
+          speedtest-db:
+        ```
+
+    === "MySQL"
+
+        ```yaml
+        services:
+            speedtest-tracker:
+                image: lscr.io/linuxserver/speedtest-tracker:latest
+                restart: unless-stopped
+                container_name: speedtest-tracker
+                ports:
+                    - 8080:80
+                    - 8443:443
+                environment:
+                    - PUID=
+                    - PGID=
+                    - APP_KEY= # Required
+                    - APP_URL= # Required
+                    - DB_CONNECTION=mysql
+                    - DB_HOST=db
+                    - DB_PORT=3306
+                    - DB_DATABASE=speedtest_tracker
+                    - DB_USERNAME=speedtest_tracker
+                    - DB_PASSWORD=password
+                volumes:
+                    - /path/to/data:/config
+                    - /path/to-custom-ssl-keys:/config/keys
+                depends_on:
+                    - db
+            db:
+                image: mysql:8
+                restart: always
+                environment:
+                    - MYSQL_DATABASE=speedtest_tracker
+                    - MYSQL_USER=speedtest_tracker
+                    - MYSQL_PASSWORD=password
+                    - MYSQL_RANDOM_ROOT_PASSWORD=true
+                volumes:
+                    - speedtest-db:/var/lib/mysql
+                healthcheck:
+                    test: ["CMD", "mysqladmin", "ping", "-p${MYSQL_PASSWORD}"]
+                    interval: 5s
+                    retries: 5
+                    timeout: 5s
+        volumes:
+          speedtest-db:
+        ```
+
+    === "Postgres"
+
+        ```yaml
+        services:
+            speedtest-tracker:
+                image: lscr.io/linuxserver/speedtest-tracker:latest
+                restart: unless-stopped
+                container_name: speedtest-tracker
+                ports:
+                    - 8080:80
+                    - 8443:443
+                environment:
+                    - PUID=
+                    - PGID=
+                    - APP_KEY= # Required
+                    - APP_URL= # Required
+                    - DB_CONNECTION=pgsql
+                    - DB_HOST=db
+                    - DB_PORT=5432
+                    - DB_DATABASE=speedtest_tracker
+                    - DB_USERNAME=speedtest_tracker
+                    - DB_PASSWORD=password
+                volumes:
+                    - /path/to/data:/config
+                    - /path/to-custom-ssl-keys:/config/keys
+                depends_on:
+                    - db
+            db:
+                image: postgres:18
+                restart: always
+                environment:
+                    - POSTGRES_DB=speedtest_tracker
+                    - POSTGRES_USER=speedtest_tracker
+                    - POSTGRES_PASSWORD=password
+                    - PGDATA=/var/lib/postgresql/data/
+                volumes:
+                    - speedtest-db:/var/lib/postgresql/data
+                healthcheck:
+                    test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+                    interval: 10s
+                    retries: 5
+                    timeout: 5s
+        volumes:
+          speedtest-db:
+        ```
+
+=== "Docker Run"
+
+    !!! info
+
+        Docker run commands assume you already have a database installed and configured.
+
+    === "SQLite"
+
+        ```bash
+        docker run -d --name speedtest-tracker --restart unless-stopped \
+            -p 8080:80 \
+            -p 8443:443 \
+            -e PUID= \
+            -e PGID= \
+            -e APP_KEY= \
+            -e APP_URL= \
+            -e DB_CONNECTION=sqlite \
+            -v /path/to/data:/config \
+            -v /path/to-custom-ssl-keys:/config/keys \
+            lscr.io/linuxserver/speedtest-tracker:latest
+        ```
+
+    === "MariaDB"
+
+        ```bash
+        docker run -d --name speedtest-tracker --restart unless-stopped \
+            -p 8080:80 \
+            -p 8443:443 \
+            -e PUID= \
+            -e PGID= \
+            -e APP_KEY= \
+            -e APP_URL= \
+            -e DB_CONNECTION=mariadb \
+            -e DB_HOST= \
+            -e DB_PORT=3306 \
+            -e DB_DATABASE=speedtest_tracker \
+            -e DB_USERNAME= \
+            -e DB_PASSWORD= \
+            -v /path/to/data:/config \
+            -v /path/to-custom-ssl-keys:/config/keys \
+            lscr.io/linuxserver/speedtest-tracker:latest
+        ```
+
+    === "MySQL"
+
+        ```bash
+        docker run -d --name speedtest-tracker --restart unless-stopped \
+            -p 8080:80 \
+            -p 8443:443 \
+            -e PUID= \
+            -e PGID= \
+            -e APP_KEY= \
+            -e APP_URL= \
+            -e DB_CONNECTION=mysql \
+            -e DB_HOST= \
+            -e DB_PORT=3306 \
+            -e DB_DATABASE=speedtest_tracker \
+            -e DB_USERNAME= \
+            -e DB_PASSWORD= \
+            -v /path/to/data:/config \
+            -v /path/to-custom-ssl-keys:/config/keys \
+            lscr.io/linuxserver/speedtest-tracker:latest
+        ```
+
+    === "Postgres"
+
+        ```bash
+        docker run -d --name speedtest-tracker --restart unless-stopped \
+            -p 8080:80 \
+            -p 8443:443 \
+            -e PUID= \
+            -e PGID= \
+            -e APP_KEY= \
+            -e APP_URL= \
+            -e DB_CONNECTION=pgsql \
+            -e DB_HOST= \
+            -e DB_PORT=5432 \
+            -e DB_DATABASE=speedtest_tracker \
+            -e DB_USERNAME= \
+            -e DB_PASSWORD= \
+            -v /path/to/data:/config \
+            -v /path/to-custom-ssl-keys:/config/keys \
+            lscr.io/linuxserver/speedtest-tracker:latest
+        ```
+
+    !!! info
+
+        - `APP_KEY`: generate with `echo "base64:$(openssl rand -base64 32 2>/dev/null)"`
+        - `APP_URL`: the URL where you'll access the app (e.g., `http://localhost:8080`)
+
+!!! info
+
+    If you would like to provide your own SSL keys, they must be named `cert.crt` (full chain) and `cert.key` (private key), and mounted in the container folder `/config/keys`.
+
+#### Environment Variables
+
+In order for the application to run smoothly, some environment variables need to be set. Check out the [Environment Variables](../environment-variables.md) section. Make sure all **required** variables are configured.
+
+#### Configuration Variables (Optional)
+
+You can set configuration variables to have automatic speedtest on an schedule. Check out the [Environment Variables](../environment-variables.md#speed-tests) section on how to set the variables. Also see the [FAQ](../../help/faqs.md#speedtest) for tips effectively scheduling tests.
+
+!!! info
+
+    Complete overview of the Environment Variables for custom configuration can be found [here](../environment-variables.md).
+
+#### Start the Container
+
+You can now start the container accordingly the platform you are on.
+
+#### First Login
+
+During the start the container there is a default username and password created. Use the [default login](../../security/authentication.md#default-login-account) credentials to login to the application. You can [change the default user](../../security/authentication.md#change-account-details) after logging in.
+
